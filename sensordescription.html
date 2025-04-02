@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+  <title>Sensors for Air and Water</title>
+  <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        background-color: #eef2f3;
+        background-image: url('background1.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        font-family: 'Fredoka One', cursive;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 30px;
+        color: black; 
+        padding: 20px 0; 
+      }
+
+      header h1 {
+        margin: 0;
+        font-size: 32px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      .back-button {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        transition: background-color 0.2s;
+      }
+
+      .back-button:hover {
+        background-color: #0056b3;
+      }
+
+      .section {
+      margin-bottom: 150px;
+      }
+
+      .section h2 {
+      border: 2px solid lightblue;
+      background-color: white;
+      font-size: 22px;
+      color: blue;
+      margin-bottom: 20px;
+      text-align: center;
+      text-transform: uppercase;
+      font-weight: bold;
+      }
+
+      .container {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 30px; /* Reduced gap between gallery items */
+      }
+
+      .gallery {
+        border: 2px solid #ccc;
+        width: 240px;
+        text-align: center;
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, border-color 0.2s;
+        padding: 10px; /* Added padding for content inside each gallery */
+      }
+
+      .gallery:hover {
+        border-color: #777;
+        transform: scale(1.05);
+      }
+
+      .gallery img {
+        width: 100%;
+        height: auto;
+        border-bottom: 1px solid #ccc;
+      }
+
+      .desc {
+        padding: 10px;
+        text-align: center;
+        font-size: 14px;
+        color: #333;
+      }
+
+      .more-about {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 8px 15px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: bold;
+        border-radius: 5px;
+        transition: background-color 0.2s;
+      }
+
+      .more-about:hover {
+        background-color: #0056b3;
+      }
+  </style>
+</head>
+<body>
+
+  <a href="homepage.html" class="back-button">Back to Homepage</a>
+
+  <header>
+    <h1>Sensors for Air and Water</h1>
+  </header>
+
+  <section class="section">
+    <h2>Air Sensors</h2>
+    <div class="container">
+      <div class="gallery">
+        <a target="_blank" href="pms5003.jpg">
+          <img src="pms5003.jpg" alt="PMS5003 Particulate Sensor">
+        </a>
+        <div class="desc">PMS5003 Particulate Sensor</div>
+        <a href="pms5003.html" class="more-about">More About</a>
+      </div>
+
+      <div class="gallery">
+        <a target="_blank" href="mq131sensor.jpg">
+          <img src="mq131sensor.jpg" alt="MQ131 Ozone Sensor">
+        </a>
+        <div class="desc">MQ131 Ozone Sensor</div>
+        <a href="mq131.html" class="more-about">More About</a>
+      </div>
+
+      <div class="gallery">
+        <a target="_blank" href="mhz19.jpg">
+          <img src="mhz19.jpg" alt="MHZ19 CO2 Sensor">
+        </a>
+        <div class="desc">MHZ19 CO2 Sensor</div>
+        <a href="mhz19.html" class="more-about">More About</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Water Sensors</h2>
+    <div class="container">
+      <div class="gallery">
+        <a target="_blank" href="phsensor.jpg">
+          <img src="phsensor.jpg" alt="pH Level Sensor">
+        </a>
+        <div class="desc">pH Level Sensor</div>
+        <a href="phsensor.html" class="more-about">More About</a>
+      </div>
+
+      <div class="gallery">
+        <a target="_blank" href="conductivitysensor.jpg">
+          <img src="conductivitysensor.jpg" alt="Conductivity Sensor">
+        </a>
+        <div class="desc">Conductivity Sensor</div>
+        <a href="conductivitysensor.html" class="more-about">More About</a>
+      </div>
+
+      <div class="gallery">
+        <a target="_blank" href="turbiditysensor.jpg">
+          <img src="turbiditysensor.jpg" alt="Turbidity Sensor">
+        </a>
+        <div class="desc">Turbidity Sensor</div>
+        <a href="turbiditysensor.html" class="more-about">More About</a>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>

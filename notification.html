@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Alerts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+
+    <script type="module">
+        // Import Firebase modules (ES Module)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCn87T1nQGDszjP6SzqEgipiuS7O1J4h9E",
+            authDomain: "thesismonitoring.firebaseapp.com",
+            databaseURL: "https://thesismonitoring-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "thesismonitoring",
+            storageBucket: "thesismonitoring.appspot.com",
+            messagingSenderId: "259146059264",
+            appId: "1:259146059264:web:49cb7727dede0c751bd2e5",
+            measurementId: "G-C0R7LJJPC8"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Define thresholds
+        const thresholds = {
+            mq131: 100,
+            co2: 800,
+            pms: 50,
+            pH: [6.5, 8.5],
+            conductivity: 500,
+            turbidity: 5
+        };
+
+        function checkAlerts(data) {
+            let alerts = [];
+            if (data.mq131 > thresholds.mq131) alerts.push(`⚠️ High Ozone (MQ131): ${data.mq131} ppm`);
+            if (data.co2 > thresholds.co2) alerts.push(`⚠️ High CO₂: ${data.co2} ppm`);
+            if (data.pms > thresholds.pms) alerts.push(`⚠️ High PM: ${data.pms} µg/m³`);
+            if (data.pH < thresholds.pH[0] || data.pH > thresholds.pH[1]) alerts.push(`⚠️ Abnormal pH: ${data.pH}`);
+            if (data.conductivity > thresholds.conductivity) alerts.push(`⚠️ High Conductivity: ${data.conductivity} µS/cm`);
+            if (data.turbidity > thresholds.turbidity) alerts.push(`⚠️ High Turbidity: ${data.turbidity} NTU`);
+
+            if (alerts.length > 0) {
+                addNotification(alerts);
+            }
+        }
+
+        function addNotification(messages) {
+            const notificationList = document.getElementById("notification-list");
+            const timestamp = new Date().toLocaleTimeString();
+            
+            messages.forEach(message => {
+                const newNotification = document.createElement("li");
+                newNotification.innerHTML = `<strong>[${timestamp}]</strong> ${message}`;
+                notificationList.appendChild(newNotification);
+            });
+
+            // Show notification panel
+            document.getElementById("notification-panel").style.display = "block";
+        }
+
+        function clearNotifications() {
+            document.getElementById("notification-list").innerHTML = "";
+            document.getElementById("notification-panel").style.display = "none";
+        }
+
+        // Listen for data changes in Firebase
+        const sensorRef = ref(db, "sensorData");
+
+        onValue(sensorRef, (snapshot) => {
+            if (snapshot.exists()) {
+                console.log("Firebase Data:", snapshot.val()); // Debugging output
+                checkAlerts(snapshot.val());
+            } else {
+                console.log("No data found in Firebase.");
+            }
+        });
+
+    </script>
+
+    <style>
+        body {
+            font-family: 'Fredoka One', cursive;
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            text-align: center;
+            padding: 20px;
+            color: white;
+            position: relative;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            color: black;
+            position: relative;
+        }
+        h1 {
+            color: #333;
+        }
+        .back-button {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+
+        /* Notification Panel */
+        #notification-panel {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            max-height: 300px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        #notification-panel h2 {
+            font-size: 16px;
+            margin: 0;
+            border-bottom: 1px solid white;
+            padding-bottom: 5px;
+        }
+
+        #notification-list {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+
+        #notification-list li {
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            margin-bottom: 5px;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        .clear-button {
+            width: 100%;
+            padding: 8px;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        .clear-button:hover {
+            background: darkred;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Back to Homepage Button -->
+    <a href="homepage.html" class="back-button">Back to Homepage</a>
+
+    <div class="container">
+        <h1>Sensor Alerts</h1>
+        <p>Monitoring real-time sensor values...</p>
+    </div>
+
+    <!-- Notification List Panel -->
+    <div id="notification-panel">
+        <h2>⚠️ Notifications</h2>
+        <ul id="notification-list"></ul>
+        <button class="clear-button" onclick="clearNotifications()">Clear All</button>
+    </div>
+
+</body>
+</html>

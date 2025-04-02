@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+  <title>Conductivity Sensor</title>
+  <style>
+    /* General Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Fredoka One', cursive;
+      background-color: #f9fafb;
+      background-image: url('background3.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: #2c3e50;
+      line-height: 1.6;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* Header Styles */
+    header {
+      background-color: #1abc9c;
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .back-button {
+      background-color: transparent;
+      border: 2px solid white;
+      border-radius: 20px;
+      padding: 8px 15px;
+      font-size: 0.9em;
+      color: white;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      background-color: white;
+      color: #1abc9c;
+    }
+
+    header h1 {
+      font-size: 1.8em;
+    }
+
+    /* Main Content */
+    main {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 20px 30px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+      margin-top: 20px;
+      font-size: 1.5em;
+      color: #1abc9c;
+    }
+
+    p, ul {
+      margin-top: 15px;
+      font-size: 1.1em;
+    }
+
+    ul {
+      list-style-type: disc;
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 10px;
+    }
+
+    /* Section Styling */
+    .fun-facts, .extra-info, .conductivity-info {
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    .fun-facts {
+      background-color: #e8f8f5;
+      border-left: 5px solid #1abc9c;
+    }
+
+    .extra-info {
+      background-color: #fce4ec;
+      border-left: 5px solid #e91e63;
+    }
+
+    .conductivity-info {
+      background-color: #f3f7fd;
+      border-left: 5px solid #3498db;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px;
+      font-size: 0.9em;
+      color: #95a5a6;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="sensordescription.html" class="back-button">Back to Sensors</a>
+    <h1>Conductivity Sensor</h1>
+  </header>
+
+  <main>
+    <h2>Description</h2>
+    <p>
+      A conductivity sensor measures the ability of a solution to conduct electrical current, which is primarily dependent on the presence of ions in the solution. 
+      These sensors are widely used in water quality monitoring, agriculture, and industrial processes to determine salinity, total dissolved solids (TDS), or nutrient levels.
+    </p>
+    <p>
+      Conductivity sensors provide accurate and reliable readings, essential for maintaining optimal conditions in various applications.
+    </p>
+
+    <h2>What is Conductivity?</h2>
+    <div class="conductivity-info">
+      <p><strong>Conductivity:</strong> It is the measure of a solution’s ability to conduct electricity, expressed in Siemens per meter (S/m) or microsiemens per centimeter (µS/cm). Conductivity is influenced by temperature, ion concentration, and the nature of dissolved salts. Monitoring conductivity is crucial in water treatment, aquaculture, and hydroponics.</p>
+    </div>
+
+    <h2>Fun Facts</h2>
+    <div class="fun-facts">
+      <ul>
+        <li><strong>Range:</strong> Can measure conductivity levels from pure water to highly saline solutions.</li>
+        <li><strong>Applications:</strong> Used in environmental monitoring, aquariums, and agriculture.</li>
+        <li><strong>Durability:</strong> Built to withstand harsh conditions, including high salinity environments.</li>
+        <li><strong>Compact:</strong> Lightweight and portable for easy integration into various systems.</li>
+        <li><strong>Temperature Compensation:</strong> Many models include automatic temperature compensation for accurate readings.</li>
+      </ul>
+    </div>
+
+    <h2>Additional Information</h2>
+    <div class="extra-info">
+      <ul>
+        <li><strong>Power Requirements:</strong> Operates on 3.3V or 5V, making it compatible with most microcontrollers.</li>
+        <li><strong>Output:</strong> Provides both analog and digital output for versatile integration.</li>
+        <li><strong>Temperature Range:</strong> Functions effectively between 0°C and 60°C.</li>
+        <li><strong>Maintenance:</strong> Regular cleaning and calibration ensure consistent accuracy.</li>
+        <li><strong>Design:</strong> Robust and suitable for both laboratory and field use.</li>
+      </ul>
+    </div>
+  </main>
+
+  <footer>
+    © 2025 Air and Water Quality Monitoring using Wireless Sensor Networks. All rights reserved.
+  </footer>
+
+</body>
+</html>

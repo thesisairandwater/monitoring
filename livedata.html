@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Data</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Fredoka One', cursive;
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            text-align: center;
+            padding: 20px;
+            color: white;
+            position: relative;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            color: black;
+            position: relative;
+        }
+        h1 {
+            color: #333;
+        }
+        .section {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        .air-section {
+            background: rgba(255, 200, 0, 0.2);
+        }
+        .water-section {
+            background: rgba(0, 150, 255, 0.2);
+        }
+        .sensor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .sensor-box {
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .sensor-box h2 {
+            font-size: 1.2em;
+            color: #007BFF;
+        }
+        .sensor-box p {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .timestamp {
+            margin-top: 20px;
+            font-size: 1em;
+            color: #666;
+        }
+        .reports {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        .report-list {
+            list-style: none;
+            padding: 0;
+        }
+        .report-list li {
+            background: #fff;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+        .back-button {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <a href="homepage.html" class="back-button">Back to Homepage</a>
+    <div class="container">
+        <h1>Air and Water Quality Live Data</h1>
+        
+        <div class="section air-section">
+            <h2>Air Quality</h2>
+            <div class="sensor-grid">
+                <div class="sensor-box">
+                    <h2>CO₂</h2>
+                    <p><span id="co2">Loading...</span></p>
+                </div>
+                <div class="sensor-box">
+                    <h2>Ozone</h2>
+                    <p><span id="ozone">Loading...</span></p>
+                </div>
+                <div class="sensor-box">
+                    <h2>PM2.5</h2>
+                    <p><span id="pm25">Loading...</span></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section water-section">
+            <h2>Water Quality</h2>
+            <div class="sensor-grid">
+                <div class="sensor-box">
+                    <h2>TDS</h2>
+                    <p><span id="tds">Loading...</span></p>
+                </div>
+                <div class="sensor-box">
+                    <h2>pH Level</h2>
+                    <p><span id="ph">Loading...</span></p>
+                </div>
+                <div class="sensor-box">
+                    <h2>Turbidity</h2>
+                    <p><span id="turbidity">Loading...</span></p>
+                </div>
+            </div>
+        </div>
+
+        <p class="timestamp">Last Updated: <span id="timestamp">Loading...</span></p>
+        
+        <div class="reports">
+            <h2>Past Reports</h2>
+            <ul id="report-list" class="report-list"></ul>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCn87T1nQGDszjP6SzqEgipiuS7O1J4h9E",
+            authDomain: "thesismonitoring.firebaseapp.com",
+            databaseURL: "https://thesismonitoring-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "thesismonitoring",
+            storageBucket: "thesismonitoring.firebasestorage.app",
+            messagingSenderId: "259146059264",
+            appId: "1:259146059264:web:49cb7727dede0c751bd2e5",
+            measurementId: "G-C0R7LJJPC8"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const dbRef = firebase.database().ref("sensor_data");
+
+        dbRef.limitToLast(1).on("child_added", function(snapshot) {
+            const data = snapshot.val();
+            $("#co2").text(data.CO2 || "N/A");
+            $("#ozone").text(data.Ozone || "N/A");
+            $("#pm25").text(data.PM2_5 || "N/A");
+            $("#tds").text(data["TDS-C"] || "N/A");
+            $("#ph").text(data.pH || "N/A");
+            $("#turbidity").text(data.Turbidity || "N/A");
+            $("#timestamp").text(data.timestamp || "N/A");
+        });
+
+        dbRef.limitToLast(100).on("child_added", function(snapshot) {
+            const data = snapshot.val();
+            $("#report-list").prepend(`<li>${data.timestamp || "Unknown Date"}: CO2: ${data.CO2}, Ozone: ${data.Ozone}, PM2.5: ${data.PM2_5}, TDS: ${data["TDS-C"]}, pH: ${data.pH}, Turbidity: ${data.Turbidity}</li>`);
+        });
+    </script>
+</body>
+</html>

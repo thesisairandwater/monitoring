@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+  <title>MH-Z19 Sensor</title>
+  <style>
+    /* General Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Fredoka One', cursive;
+      background-color: #f9fafb;
+      background-image: url('background2.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: #2c3e50;
+      line-height: 1.6;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* Header Styles */
+    header {
+      background-color: #1abc9c;
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .back-button {
+      background-color: transparent;
+      border: 2px solid white;
+      border-radius: 20px;
+      padding: 8px 15px;
+      font-size: 0.9em;
+      color: white;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      background-color: white;
+      color: #1abc9c;
+    }
+
+    header h1 {
+      font-size: 1.8em;
+    }
+
+    /* Main Content */
+    main {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 20px 30px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+      margin-top: 20px;
+      font-size: 1.5em;
+      color: #1abc9c;
+    }
+
+    p, ul {
+      margin-top: 15px;
+      font-size: 1.1em;
+    }
+
+    ul {
+      list-style-type: disc;
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 10px;
+    }
+
+    /* Section Styling */
+    .fun-facts, .extra-info, .co2-info {
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    .fun-facts {
+      background-color: #e8f8f5;
+      border-left: 5px solid #1abc9c;
+    }
+
+    .extra-info {
+      background-color: #fce4ec;
+      border-left: 5px solid #e91e63;
+    }
+
+    .co2-info {
+      background-color: #f3f7fd;
+      border-left: 5px solid #3498db;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px;
+      font-size: 0.9em;
+      color: #95a5a6;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="sensordescription.html" class="back-button">Back to Sensors</a>
+    <h1>MH-Z19 Sensor</h1>
+  </header>
+
+  <main>
+    <h2>Description</h2>
+    <p>
+      The MH-Z19 is a highly accurate infrared (NDIR) CO2 sensor used to measure carbon dioxide concentrations in the air. 
+      It is widely employed in HVAC systems, air quality monitors, and IoT applications requiring real-time CO2 monitoring.
+    </p>
+    <p>
+      This sensor offers reliable performance with low power consumption, making it ideal for both portable and stationary applications.
+    </p>
+
+    <h2>What is CO2?</h2>
+    <div class="co2-info">
+      <p><strong>Carbon Dioxide (CO2):</strong> A naturally occurring gas, CO2 is a key component of Earth's atmosphere. It is produced by respiration, combustion, and various industrial processes. While essential for photosynthesis, elevated CO2 levels indoors can lead to drowsiness, reduced productivity, and health issues. Monitoring CO2 levels helps maintain healthy indoor air quality.</p>
+    </div>
+
+    <h2>Fun Facts</h2>
+    <div class="fun-facts">
+      <ul>
+        <li><strong>High Sensitivity:</strong> Measures CO2 levels from 400 ppm to 5000 ppm.</li>
+        <li><strong>Applications:</strong> Frequently used in greenhouses, HVAC systems, and smart home devices.</li>
+        <li><strong>Self-Calibration:</strong> Features automatic baseline correction for long-term accuracy.</li>
+        <li><strong>Low Power:</strong> Consumes minimal energy, ideal for battery-operated devices.</li>
+        <li><strong>Compact:</strong> Small size enables seamless integration into projects.</li>
+      </ul>
+    </div>
+
+    <h2>Additional Information</h2>
+    <div class="extra-info">
+      <ul>
+        <li><strong>Power Requirements:</strong> Operates on 5V DC with low power consumption.</li>
+        <li><strong>Output:</strong> Provides both PWM and UART output for versatile integration.</li>
+        <li><strong>Temperature Range:</strong> Functions effectively between 0°C and 50°C.</li>
+        <li><strong>Accuracy:</strong> Features a high precision of ±50 ppm + 5% of the reading.</li>
+        <li><strong>Longevity:</strong> Long operational lifespan with minimal maintenance.</li>
+      </ul>
+    </div>
+  </main>
+
+  <footer>
+    © 2025 Air and Water Quality Monitoring using Wireless Sensor Networks. All rights reserved.
+  </footer>
+
+</body>
+</html>

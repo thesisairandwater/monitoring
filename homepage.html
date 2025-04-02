@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air and Water Quality Monitoring</title>
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Fredoka One', cursive;
+        background: #f4f4f9;
+        color: #333;
+        scroll-behavior: smooth;
+    }
+
+    /* Header Styling */
+    header {
+        background: #007bff;
+        color: white;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        padding: 1rem 0;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        transition: background 0.3s ease-in-out;
+    }
+
+    .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .nav__logo {
+        font-size: 1.7rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .logo-circle {
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    /* Navigation Menu */
+    .nav__list {
+        list-style: none;
+        display: flex;
+        gap: 1.5rem;
+        padding: 0;
+        margin: 0;
+    }
+
+    .nav__link {
+        color: white;
+        text-decoration: none;
+        font-size: 1rem;
+        padding: 0.5rem 0.8rem;
+        transition: all 0.3s ease-in-out;
+        border-radius: 5px;
+    }
+
+    .nav__link:hover,
+    .nav__link.active-link {
+        background: rgba(255, 255, 255, 0.2);
+        color: #f4f4f4;
+    }
+
+    /* Hero Section */
+    section {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 3rem;
+        position: relative;
+        color: white;
+        background: url('airandwater.jpg') no-repeat center center/cover;
+    }
+
+    section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 1;
+    }
+
+    section > div {
+        max-width: 800px;
+        margin: auto;
+        text-align: center;
+        z-index: 2;
+    }
+
+    .section__title {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    .section__description {
+        font-size: 1.5rem;
+        max-width: 800px;
+        text-align: center;
+        line-height: 1.6;
+        animation: fadeIn 1.5s ease-in-out;
+    }
+
+    /* Buttons */
+    .button {
+        padding: 1rem 2rem;
+        background: #ff6b6b;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.3s ease-in-out;
+        display: inline-block;
+        margin-top: 1rem;
+    }
+
+    .button:hover {
+        background: #d43f3f;
+        transform: scale(1.05);
+    }
+
+    .sensor-list {
+        font-size: 1.3rem;
+        margin: 0.5rem 0;
+        list-style: none;
+        padding: 0;
+        text-align: center;
+    }
+
+    .sensor-list a {
+        color: #4a90e2;
+        font-weight: bold;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Footer Styling */
+    footer {
+        background: #222;
+        color: white;
+        text-align: center;
+        padding: 2rem 0;
+        font-size: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .nav {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .nav__list {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        section {
+            height: auto;
+            padding: 5rem 2rem;
+        }
+
+        .section__title {
+            font-size: 2.5rem;
+        }
+
+        .section__description {
+            font-size: 1.2rem;
+        }
+    }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <a href="profile.html" class="nav__logo">
+                <img src="logo.jpg" class="logo-circle">
+            </a>
+            <ul class="nav__list">
+                <li class="nav__item"><a href="#home" class="nav__link">Home</a></li>
+                <li class="nav__item"><a href="#sensors" class="nav__link">Sensors</a></li>
+                <li class="nav__item"><a href="#data" class="nav__link">Data</a></li>
+                <li class="nav__item"><a href="#about" class="nav__link">About Us</a></li>
+                <li class="nav__item"><a href="notification.html" class="nav__link">Notification</a></li>
+                <li class="nav__item"><a href="policy.html" class="nav__link">Privacy Policy</a></li>
+                <li class="nav__item"><a href="index.html" class="nav__link">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home">
+            <div>
+                <h1 class="section__title">Welcome to Air and Water Quality Monitoring</h1>
+                <p class="section__description">Where we monitor the air and water quality using Wireless Sensor Network.</p>
+                <p class="section__description">Wireless Sensor Network is about monitoring Environmental Parameters that uses different sensors.</p>
+                <a href="aboutwsm.html" class="button">More About Wireless Sensor Network</a>
+            </div>
+        </section>
+        <section id="sensors">
+            <div>
+                <h1 class="section__title">Sensors</h1>
+                <p class="section__description">We use advanced sensors for monitoring air and water quality:</p>
+                <div class="sensor-list">
+                    <a href="https://www.lazada.com.ph/products/must-have-accessories-mq131-ozone-sensor-high-concentration-10-1000ppm-gas-sensor-module-analog-ttl-level-output-for-household-electricity-accessories-i4464401950-s25383502481.html?c=&channelLpJumpArgs=&clickTrackInfo=query%253Amq131%25252520sensor%253Bnid%253A4464401950%253Bsrc%253ALazadaMainSrp%253Brn%253Aab4f411c6b5769a8c98cb401bcc2211a%253Bregion%253Aph%253Bsku%253A4464401950_PH%253Bprice%253A889.47%253Bclient%253Adesktop%253Bsupplier_id%253A1000202493%253Bbiz_source%253Ah5_internal%253Bslot%253A2%253Butlog_bucket_id%253A470687%253Basc_category_id%253A23177%253Bitem_id%253A4464401950%253Bsku_id%253A25383502481%253Bshop_id%253A377575%253BtemplateInfo%253A107881_D_E%2523-1_A3_C%2523&freeshipping=1&fs_ab=2&fuse_fs=&lang=en&location=China&price=889.47&priceCompare=skuId%3A25383502481%3Bsource%3Alazada-search-voucher%3Bsn%3Aab4f411c6b5769a8c98cb401bcc2211a%3BoriginPrice%3A88947%3BdisplayPrice%3A88947%3BsinglePromotionId%3A-1%3BsingleToolCode%3AmockedSalePrice%3BvoucherPricePlugin%3A0%3Btimestamp%3A1742893748463&ratingscore=&request_id=ab4f411c6b5769a8c98cb401bcc2211a&review=&sale=0&search=1&source=search&spm=a2o4l.searchList.list.2&stock=1" target="_blank" style="color: #007bff; text-decoration: none; transition: color 0.3s ease;">
+                        MQ131 - Ozone Sensor
+                    </a><br>
+                    <a href="https://www.lazada.com.ph/products/mh-z19-infrared-co2-sensor-for-co2-monitor-mh-z19b-mh-z19c-infrared-carbon-dioxide-co2-gas-sensor-0-5000ppm-i4606898525-s26456508477.html" target="_blank" style="color: #007bff; text-decoration: none; transition: color 0.3s ease;">
+                        MH-Z19 - CO2 Sensor
+                    </a><br>
+                    <a href="https://www.lazada.com.ph/products/sdrjt-pms5003-pms5003t-g5-pm25-gas-air-particle-dust-laser-sensor-module-high-precision-digital-air-gas-purifier-electronic-diy-rjjaw-i4387707059-s24646572108.html?c=&channelLpJumpArgs=&clickTrackInfo=query%253Apms5003%253Bnid%253A4387707059%253Bsrc%253ALazadaMainSrp%253Brn%253A7dc68f9f88a1c085e5a53cd4f1326723%253Bregion%253Aph%253Bsku%253A4387707059_PH%253Bprice%253A1407.72%253Bclient%253Adesktop%253Bsupplier_id%253A500158587697%253Bbiz_source%253Ah5_internal%253Bslot%253A2%253Butlog_bucket_id%253A470687%253Basc_category_id%253A7541%253Bitem_id%253A4387707059%253Bsku_id%253A24646572108%253Bshop_id%253A889389%253BtemplateInfo%253A107881_D_E%2523-1_A3_C%2523&freeshipping=1&fs_ab=2&fuse_fs=&lang=en&location=China&price=1407.72&priceCompare=skuId%3A24646572108%3Bsource%3Alazada-search-voucher%3Bsn%3A7dc68f9f88a1c085e5a53cd4f1326723%3BoriginPrice%3A140772%3BdisplayPrice%3A140772%3BsinglePromotionId%3A-1%3BsingleToolCode%3AmockedSalePrice%3BvoucherPricePlugin%3A0%3Btimestamp%3A1734311148343&ratingscore=&request_id=7dc68f9f88a1c085e5a53cd4f1326723&review=&sale=0&search=1&source=search&spm=a2o4l.searchlist.list.2&stock=1" target="_blank" style="color: #007bff; text-decoration: none; transition: color 0.3s ease;">
+                        PMS5003 - Particulate Matter Sensor
+                    </a><br>
+                    <a href="https://www.lazada.com.ph/products/ph-4502c-liquid-ph-sensor-with-e201-bnc-electrode-for-arduino-i4707366740-s27206376441.html?c=&channelLpJumpArgs=&clickTrackInfo=query%253Aph%25252520sensor%253Bnid%253A4707366740%253Bsrc%253ALazadaMainSrp%253Brn%253A8a1aadc5611139e692a9c54c0170647b%253Bregion%253Aph%253Bsku%253A4707366740_PH%253Bprice%253A3321.27%253Bclient%253Adesktop%253Bsupplier_id%253A500960912326%253Bbiz_source%253Ah5_pdp%253Bslot%253A30%253Butlog_bucket_id%253A470687%253Basc_category_id%253A22654%253Bitem_id%253A4707366740%253Bsku_id%253A27206376441%253Bshop_id%253A5368878%253BtemplateInfo%253A107881_D_E%2523-1_A3_C%2523&freeshipping=1&fs_ab=2&fuse_fs=&lang=en&location=Metro%20Manila~Paranaque&price=3321.27&priceCompare=skuId%3A27206376441%3Bsource%3Alazada-search-voucher%3Bsn%3A8a1aadc5611139e692a9c54c0170647b%3BoriginPrice%3A332127%3BdisplayPrice%3A332127%3BsinglePromotionId%3A-1%3BsingleToolCode%3A-1%3BvoucherPricePlugin%3A0%3Btimestamp%3A1742893870439&ratingscore=&request_id=8a1aadc5611139e692a9c54c0170647b&review=&sale=0&search=1&source=search&spm=a2o4l.searchList.list.30&stock=1" target="_blank" style="color: #007bff; text-decoration: none; transition: color 0.3s ease;">
+                        pH - pH Level Sensor
+                    </a><br>
+                    <a href="https://www.lazada.com.ph/products/analog-tds-sensor-water-conductivity-module-board-kit-i4355619866-s24428008754.html?c=&channelLpJumpArgs=&clickTrackInfo=query%253Aconductivity%252Bsensor%253Bnid%253A4355619866%253Bsrc%253ALazadaMainSrp%253Brn%253A3ee74fe4c6a9c76066beadbefb5a5293%253Bregion%253Aph%253Bsku%253A4355619866_PH%253Bprice%253A887%253Bclient%253Adesktop%253Bsupplier_id%253A1000192863%253Bbiz_source%253Ah5_internal%253Bslot%253A6%253Butlog_bucket_id%253A470687%253Basc_category_id%253A22654%253Bitem_id%253A4355619866%253Bsku_id%253A24428008754%253Bshop_id%253A368239%253BtemplateInfo%253A107881_D_E%2523-1_A3_C%2523&freeshipping=0&fs_ab=2&fuse_fs=&lang=en&location=Bulacan&price=887&priceCompare=skuId%3A24428008754%3Bsource%3Alazada-search-voucher%3Bsn%3A3ee74fe4c6a9c76066beadbefb5a5293%3BoriginPrice%3A88700%3BdisplayPrice%3A88700%3BsinglePromotionId%3A-1%3BsingleToolCode%3AmockedSalePrice%3BvoucherPricePlugin%3A0%3Btimestamp%3A1734311545412&ratingscore=&request_id=3ee74fe4c6a9c76066beadbefb5a5293&review=&sale=0&search=1&source=search&spm=a2o4l.searchlist.list.6&stock=1" target="_blank" style="color: #007bff; text-decoration: none; transition: color 0.3s ease;">
+                        TDS - Conductivity Sensor
+                    </a><br>
+                    <a href="https://www.lazada.com.ph/products/dfrobot-analog-turbidity-sensor-module-gravity-series-i111021364-s15171160565.html?" target="_blank" style="color: #007bff; text-decoration: none; transition: color 0.3s ease;">
+                        Turbidity - Turbidity Sensor
+                    </a><br>
+                </div>
+                <a href="sensordescription.html" class="button">Explore Sensors</a>
+            </div>
+        </section>
+        <section id="data">
+            <div>
+                <h1 class="section__title">Data</h1>
+                <p class="section__description">View live data and historical trends for air and water quality.</p>
+                <a href="livedata.html" class="button">Live Data</a>
+                <a href="parameters.html" class="button">About Parameters</a>
+                <a href="pastreport.html" class="button">Past Report</a>
+            </div>
+        </section>
+        <section id="about">
+            <div>
+                <h1 class="section__title">About Us</h1>
+                <p class="section__description">Lendl Johnfil Claro</p>
+                <p class="section__description">Jhyremiah Paul Mendoza</p>
+                <p class="section__description">Paulo Ocampo</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&#169; 2025 Air and Water Quality Monitoring using Wireless Sensor Networks. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.nav__link[href^="#"]').forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').slice(1);
+                const targetSection = document.getElementById(targetId);
+
+                if (targetSection) {
+                    targetSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+  <title>PMS5003 Sensor</title>
+  <style>
+    /* General Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Fredoka One', cursive;
+      background-color: #f9fafb;
+      background-image: url('background2.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: #2c3e50;
+      line-height: 1.6;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* Header Styles */
+    header {
+      background-color: #1abc9c;
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .back-button {
+      background-color: transparent;
+      border: 2px solid white;
+      border-radius: 20px;
+      padding: 8px 15px;
+      font-size: 0.9em;
+      color: white;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      background-color: white;
+      color: #1abc9c;
+    }
+
+    header h1 {
+      font-size: 1.8em;
+    }
+
+    /* Main Content */
+    main {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 20px 30px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+      margin-top: 20px;
+      font-size: 1.5em;
+      color: #1abc9c;
+    }
+
+    p, ul {
+      margin-top: 15px;
+      font-size: 1.1em;
+    }
+
+    ul {
+      list-style-type: disc;
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 10px;
+    }
+
+    /* Section Styling */
+    .fun-facts, .extra-info, .pm-info {
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    .fun-facts {
+      background-color: #e8f8f5;
+      border-left: 5px solid #1abc9c;
+    }
+
+    .extra-info {
+      background-color: #fce4ec;
+      border-left: 5px solid #e91e63;
+    }
+
+    .pm-info {
+      background-color: #f3f7fd;
+      border-left: 5px solid #3498db;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px;
+      font-size: 0.9em;
+      color: #95a5a6;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="sensordescription.html" class="back-button">Back to Sensors</a>
+    <h1>PMS5003 Sensor</h1>
+  </header>
+
+  <main>
+    <h2>Description</h2>
+    <p>
+      The PMS5003 is a highly accurate laser-based particulate matter sensor that measures PM1.0, PM2.5, and PM10 concentrations in real time. 
+      It uses advanced light scattering technology to detect fine particles as small as 0.3 microns, providing crucial air quality data.
+    </p>
+    <p>
+      With its compact design and simple communication protocol, it’s perfect for environmental monitoring, IoT devices, and smart home applications. 
+      The sensor provides consistent and reliable readings, making it a favorite among DIY enthusiasts and professionals alike.
+    </p>
+
+    <h2>What Are PM2.5 and PM10?</h2>
+    <div class="pm-info">
+      <p><strong>PM2.5:</strong> These are fine particles with a diameter of 2.5 microns or smaller, typically produced by combustion processes like vehicle emissions, thermal power plants, and forest fires. Due to their small size, they can penetrate deep into the lungs and bloodstream, potentially causing health issues such as asthma, cardiovascular disease, and respiratory infections. The 24-hour average PM2.5 limit is set at 35 µg/m³.</p>
+      <p><strong>PM10:</strong> These larger particles, up to 10 microns in diameter, often come from activities like stone crushing, coal grinding, road dust stirred by vehicles, and industrial processes. PM10 can irritate the respiratory system and exacerbate existing lung conditions. The 24-hour average PM10 limit is 150 µg/m³.</p>
+    </div>
+
+    <h2>Fun Facts</h2>
+    <div class="fun-facts">
+      <ul>
+        <li><strong>Laser Precision:</strong> Measures particles with a diameter as small as 0.3 microns.</li>
+        <li><strong>Smart Device Integration:</strong> Frequently used in air purifiers and weather stations.</li>
+        <li><strong>Longevity:</strong> Operates continuously for up to 30,000 hours.</li>
+        <li><strong>Energy Efficient:</strong> Consumes minimal power, ideal for portable devices.</li>
+        <li><strong>Real-World Standards:</strong> Provides data compatible with AQI calculations based on WHO guidelines.</li>
+      </ul>
+    </div>
+
+    <h2>Additional Information</h2>
+    <div class="extra-info">
+      <ul>
+        <li><strong>Best Use:</strong> Performs optimally in environments with humidity levels below 70%.</li>
+        <li><strong>Internal Fan:</strong> Includes a small fan to ensure consistent airflow for accurate readings.</li>
+        <li><strong>Communication:</strong> Supports UART and I2C protocols, making it highly versatile.</li>
+        <li><strong>Compact Design:</strong> Measuring only 50mm x 38mm x 21mm, it’s easy to embed in any project.</li>
+        <li><strong>Maintenance:</strong> Regular cleaning and calibration extend its lifespan and maintain accuracy.</li>
+      </ul>
+    </div>
+  </main>
+
+  <footer>
+    © 2025 Air and Water Quality Monitoring using Wireless Sensor Networks. All rights reserved.
+  </footer>
+
+</body>
+</html>
