@@ -174,10 +174,15 @@
             });
 
             const csvContent = "Timestamp,CO2,Ozone,PM2.5,pH,Turbidity,Conductivity\n" + tableData.join("\n");
+
+            // Get the selected date from the date picker
+            const selectedDate = $('#date-select').val();
+            const filename = `monitoring_data_${selectedDate}.csv`;
+
             const blob = new Blob([csvContent], { type: 'text/csv' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'past_monitoring_data.csv';
+            link.download = filename;
             link.click();
         }
 
