@@ -19,7 +19,7 @@
             position: relative;
         }
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: auto;
             background: white;
             padding: 20px;
@@ -63,6 +63,11 @@
             font-weight: bold;
             margin: 10px 0;
         }
+        .sensor-box .status {
+            font-size: 1.1em;
+            font-weight: normal;
+            margin-top: 5px;
+        }
         .timestamp {
             margin-top: 20px;
             font-size: 1em;
@@ -86,7 +91,7 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             text-align: left;
         }
-        .back-button {
+        .back-button, .graph-button {
             display: inline-block;
             padding: 10px 15px;
             background: #007BFF;
@@ -97,10 +102,13 @@
             top: 10px;
             left: 10px;
         }
+        .back-button { top: 10px; left: 10px; }
+        .graph-button { top: 70px; left: 10px; }
     </style>
 </head>
 <body>
     <a href="homepage.html" class="back-button">Back to Homepage</a>
+    <a href="graph.html" class="graph-button">Graph Mode</a>
     <div class="container">
         <h1>Air and Water Quality Live Data</h1>
         
@@ -108,16 +116,19 @@
             <h2>Air Quality</h2>
             <div class="sensor-grid">
                 <div class="sensor-box">
-                    <h2>CO₂</h2>
-                    <p><span id="co2">Loading...</span></p>
-                </div>
-                <div class="sensor-box">
                     <h2>Ozone</h2>
                     <p><span id="ozone">Loading...</span></p>
+                    <p class="status" id="ozone-status">Status: Loading...</p>
+                </div>
+                <div class="sensor-box">
+                    <h2>CO₂</h2>
+                    <p><span id="co2">Loading...</span></p>
+                    <p class="status" id="co2-status">Status: Loading...</p>
                 </div>
                 <div class="sensor-box">
                     <h2>PM2.5</h2>
                     <p><span id="pm25">Loading...</span></p>
+                    <p class="status" id="pm25-status">Status: Loading...</p>
                 </div>
             </div>
         </div>
@@ -128,14 +139,17 @@
                 <div class="sensor-box">
                     <h2>TDS</h2>
                     <p><span id="tds">Loading...</span></p>
+                    <p class="status" id="tds-status">Status: Loading...</p>
                 </div>
                 <div class="sensor-box">
                     <h2>pH Level</h2>
                     <p><span id="ph">Loading...</span></p>
+                    <p class="status" id="ph-status">Status: Loading...</p>
                 </div>
                 <div class="sensor-box">
                     <h2>Turbidity</h2>
                     <p><span id="turbidity">Loading...</span></p>
+                    <p class="status" id="turbidity-status">Status: Loading...</p>
                 </div>
             </div>
         </div>
@@ -163,16 +177,134 @@
         firebase.initializeApp(firebaseConfig);
         const dbRef = firebase.database().ref("sensor_data");
 
-        dbRef.limitToLast(1).on("child_added", function(snapshot) {
-            const data = snapshot.val();
-            $("#co2").text(data.CO2 || "N/A");
-            $("#ozone").text(data.Ozone || "N/A");
-            $("#pm25").text(data.PM2_5 || "N/A");
-            $("#tds").text(data["TDS-C"] || "N/A");
-            $("#ph").text(data.pH || "N/A");
-            $("#turbidity").text(data.Turbidity || "N/A");
-            $("#timestamp").text(data.timestamp || "N/A");
-        });
+        function getStatus(sensor, value) {
+        let status = '';
+        let color = '';
+
+        switch (sensor) {
+            case "CO2":
+                if (value <= 400) {
+                    status = 'Fair';
+                    color = '#FFA500'; // Orange
+                } else if (value <= 1000) {
+                    status = 'Normal';
+                    color = '#28a745'; // Green
+                } else {
+                    status = 'Bad';
+                    color = '#dc3545'; // Red
+                }
+                break;
+            case "Ozone":
+                if (value >= 50) {
+                    status = 'Fair';
+                    color = '#FFA500'; // Orange
+                } else if (value <= 100) {
+                    status = 'Normal';
+                    color = '#28a745'; // Green
+                } else {
+                    status = 'Bad';
+                    color = '#dc3545'; // Red
+                }
+                break;
+            case "PM2.5":
+                if (value <= 12) {
+                    status = 'Fair';
+                    color = '#FFA500'; // Orange
+                } else if (value <= 35) {
+                    status = 'Normal';
+                    color = '#28a745'; // Green
+                } else {
+                    status = 'Bad';
+                    color = '#dc3545'; // Red
+                }
+                break;
+            case "TDS":
+                if (value <= 300) {
+                    status = 'Fair';
+                    color = '#FFA500'; // Orange
+                } else if (value <= 500) {
+                    status = 'Normal';
+                    color = '#28a745'; // Green
+                } else {
+                    status = 'Bad';
+                    color = '#dc3545'; // Red
+                }
+                break;
+            case "pH":
+                if (value >= 6.5 && value <= 8.5) {
+                    status = 'Normal';
+                    color = '#28a745'; // Green
+                } else if (value >= 5.5 && value <= 6.5) {
+                    status = 'Fair';
+                    color = '#FFA500'; // Orange
+                } else {
+                    status = 'Bad';
+                    color = '#dc3545'; // Red
+                }
+                break;
+            case "Turbidity":
+                if (value >= 50) {
+                    status = 'Fair';
+                    color = '#FFA500'; // Orange
+                } else if (value <= 50) {
+                    status = 'Normal';
+                    color = '#28a745'; // Green
+                } else {
+                    status = 'Bad';
+                    color = '#dc3545'; // Red
+                }
+                break;
+            default:
+                status = 'Unknown';
+                color = '#6c757d'; // Grey for unknown status
+                break;
+        }
+
+        return { status, color };
+    }
+
+    // Updating status and color dynamically for entire sensor box
+    dbRef.limitToLast(1).on("child_added", function(snapshot) {
+        const data = snapshot.val();
+        const co2 = data.CO2 || "N/A";
+        const ozone = data.Ozone || "N/A";
+        const pm25 = data.PM2_5 || "N/A";
+        const tds = data["TDS-C"] || "N/A";
+        const ph = data.pH || "N/A";
+        const turbidity = data.Turbidity || "N/A";
+
+        $("#co2").text(co2);
+        $("#ozone").text(ozone);
+        $("#pm25").text(pm25);
+        $("#tds").text(tds);
+        $("#ph").text(ph);
+        $("#turbidity").text(turbidity);
+        $("#timestamp").text(data.timestamp || "N/A");
+
+        // Get the status and color for each sensor
+        const co2Status = getStatus("CO2", parseFloat(co2));
+        const ozoneStatus = getStatus("Ozone", parseFloat(ozone));
+        const pm25Status = getStatus("PM2.5", parseFloat(pm25));
+        const tdsStatus = getStatus("TDS", parseFloat(tds));
+        const phStatus = getStatus("pH", parseFloat(ph));
+        const turbidityStatus = getStatus("Turbidity", parseFloat(turbidity));
+
+        // Update the status text and color dynamically for the entire sensor box
+        $("#co2-status").text("Status: " + co2Status.status);
+        $("#ozone-status").text("Status: " + ozoneStatus.status);
+        $("#pm25-status").text("Status: " + pm25Status.status);
+        $("#tds-status").text("Status: " + tdsStatus.status);
+        $("#ph-status").text("Status: " + phStatus.status);
+        $("#turbidity-status").text("Status: " + turbidityStatus.status);
+
+        // Apply background color to the whole sensor box
+        $("#co2").closest(".sensor-box").css("background-color", co2Status.color);
+        $("#ozone").closest(".sensor-box").css("background-color", ozoneStatus.color);
+        $("#pm25").closest(".sensor-box").css("background-color", pm25Status.color);
+        $("#tds").closest(".sensor-box").css("background-color", tdsStatus.color);
+        $("#ph").closest(".sensor-box").css("background-color", phStatus.color);
+        $("#turbidity").closest(".sensor-box").css("background-color", turbidityStatus.color);
+    });
 
         dbRef.limitToLast(100).on("child_added", function(snapshot) {
             const data = snapshot.val();

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Air & Water Quality Monitoring</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet"/>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+  <style>
+    body {
+      font-family: 'Fredoka One', cursive;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      text-align: center;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .sensor {
+      margin: 20px 0;
+      padding: 15px;
+      font-size: 20px;
+      border-radius: 5px;
+    }
+    #Ozone-sensor { background-color: #cce5ff; }
+    #CO2-sensor { background-color: #d4edda; }
+    #PM2_5-sensor { background-color: #f8d7da; }
+    #pH-sensor { background-color: #e2d6f3; }
+    #Turbidity-sensor { background-color: #fff3cd; }
+    #TDS-C-sensor { background-color: #f5c6cb; }
+
+    .chart-container {
+      width: 90%;
+      max-width: 800px;
+      margin: 20px auto;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .back-button, .simple-button {
+      display: inline-block;
+      padding: 10px 15px;
+      background: #007BFF;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      position: absolute;
+    }
+
+    .back-button { top: 20px; left: 20px; }
+    .simple-button { top: 80px; left: 20px; }
+  </style>
+</head>
+<body>
+  <a href="homepage.html" class="back-button">Back to Homepage</a>
+  <a href="livedata.html" class="simple-button">Simple Mode</a>
+
+  <div class="container">
+    <h2>Air & Water Quality Graph Monitoring</h2>
+    <div id="Ozone-sensor" class="sensor">Ozone: Loading...</div>
+    <div id="CO2-sensor" class="sensor">CO2: Loading...</div>
+    <div id="PM2_5-sensor" class="sensor">PM2.5: Loading...</div>
+    <div id="pH-sensor" class="sensor">pH Level: Loading...</div>
+    <div id="TDS-C-sensor" class="sensor">Conductivity (TDS): Loading...</div>
+    <div id="Turbidity-sensor" class="sensor">Turbidity: Loading...</div>
+  </div>
+
+  <div class="chart-container"><canvas id="ozoneChart"></canvas></div>
+  <div class="chart-container"><canvas id="co2Chart"></canvas></div>
+  <div class="chart-container"><canvas id="pmChart"></canvas></div>
+  <div class="chart-container"><canvas id="phChart"></canvas></div>
+  <div class="chart-container"><canvas id="tdsChart"></canvas></div>
+  <div class="chart-container"><canvas id="turbidityChart"></canvas></div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCn87T1nQGDszjP6SzqEgipiuS7O1J4h9E",
+      authDomain: "thesismonitoring.firebaseapp.com",
+      databaseURL: "https://thesismonitoring-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "thesismonitoring",
+      storageBucket: "thesismonitoring.appspot.com",
+      messagingSenderId: "259146059264",
+      appId: "1:259146059264:web:49cb7727dede0c751bd2e5",
+      measurementId: "G-C0R7LJJPC8"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function createChart(canvasId, label, color, stepSize, maxValue) {
+      return new Chart(document.getElementById(canvasId), {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: label,
+            data: [],
+            borderColor: color,
+            fill: false
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: stepSize,
+                max: maxValue
+              }
+            }
+          }
+        }
+      });
+    }
+
+    const charts = {
+      "Ozone": createChart("ozoneChart", "Ozone", "blue", 1, 150),
+      "CO2": createChart("co2Chart", "CO2", "green", 1, 1000),
+      "PM2_5": createChart("pmChart", "PM2.5", "red", 1, 150),
+      "pH": createChart("phChart", "pH Level", "purple", 1, 14),
+      "TDS-C": createChart("tdsChart", "TDS", "brown", 100, 1000),
+      "Turbidity": createChart("turbidityChart", "Turbidity", "orange", 1, 100)
+    };
+
+    function updateSensorUI(sensor, value) {
+      const sensorElement = document.getElementById(`${sensor}-sensor`);
+      if (sensorElement) {
+        sensorElement.innerHTML = `${sensor}: ${value}`;
+      }
+    }
+
+    function updateChart(chart, value) {
+      const now = new Date().toLocaleTimeString();
+      chart.data.labels.push(now);
+      chart.data.datasets[0].data.push(value);
+      if (chart.data.labels.length > 20) {
+        chart.data.labels.shift();
+        chart.data.datasets[0].data.shift();
+      }
+      chart.update();
+    }
+
+    function listenToSensor(sensorKey) {
+      const ref = db.ref("sensor_data");
+      ref.limitToLast(1).on("child_added", (snapshot) => {
+        const data = snapshot.val();
+        if (!data || !data[sensorKey]) return;
+
+        let rawValue = data[sensorKey];
+        let numericValue = rawValue;
+
+        if (typeof rawValue === "string") {
+          numericValue = parseFloat(rawValue.replace(/[^\d.-]/g, ""));
+        }
+
+        if (!isNaN(numericValue)) {
+          updateSensorUI(sensorKey, rawValue);
+          updateChart(charts[sensorKey], numericValue);
+        }
+      });
+    }
+
+    listenToSensor("Ozone");
+    listenToSensor("CO2");
+    listenToSensor("PM2_5");
+    listenToSensor("pH");
+    listenToSensor("TDS-C");
+    listenToSensor("Turbidity");
+  </script>
+</body>
+</html>

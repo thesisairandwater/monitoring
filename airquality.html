@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Air Quality</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Fredoka One', cursive;
+      background: #f2f2f2;
+      margin: 0;
+      padding: 0;
+    }
+    /* Fixed Sidebar Styles */
+    .side-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 220px;
+      background-color: #343a40;
+      padding-top: 20px;
+      z-index: 1000; /* Ensure the sidebar is on top */
+    }
+    .side-nav a {
+      display: block;
+      color: white;
+      padding: 12px 20px;
+      text-decoration: none;
+    }
+    .side-nav a:hover {
+      background-color: #495057;
+    }
+    /* Sidebar header */
+    .side-nav h4 {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+    }
+    /* Main content styles */
+    .main-content {
+      margin-left: 220px;  /* Space for the sidebar */
+      padding: 30px;
+    }
+    .chart-container {
+      margin-bottom: 30px;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    table {
+      background-color: white;
+    }
+
+    /* Styling for table headers and content */
+    .table-dark th {
+      background-color: #343a40;
+      color: white;
+    }
+    h2 {
+      border-bottom: 4px solid blue; /* Blue border at the bottom */
+      padding-bottom: 10px; /* Adds spacing below the text */
+      color: #333; /* Dark text color for contrast */
+    }
+
+    /* Make sidebar responsive for smaller screens */
+    @media (max-width: 768px) {
+      .side-nav {
+        position: relative;
+        height: auto;
+        width: 100%;
+      }
+      .main-content {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Side Navigation -->
+<div class="side-nav">
+  <h4>Navigation</h4>
+  <a href="adminpage.html">Dashboard</a>
+  <a href="airquality.html">Air Quality</a>
+  <a href="waterquality.html">Water Quality</a>
+  <a href="pastreports.html">Past Reports</a>
+  <a href="index.html">Log Out</a>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+  <div class="container mb-5" id="airQualitySection">
+    <h2 class="mb-4">Air Quality Monitoring</h2>
+
+    <!-- Live Monitoring -->
+    <div class="chart-container"><canvas id="co2LiveChart"></canvas></div>
+    <div class="chart-container"><canvas id="ozoneLiveChart"></canvas></div>
+    <div class="chart-container"><canvas id="pm25LiveChart"></canvas></div>
+
+    <!-- Historical Chart (Last 7 Days) -->
+    <h4 class="mt-5">7-Day Air Quality Trends</h4>
+    <div class="chart-container"><canvas id="co2HistoryChart"></canvas></div>
+    <div class="chart-container"><canvas id="ozoneHistoryChart"></canvas></div>
+    <div class="chart-container"><canvas id="pm25HistoryChart"></canvas></div>
+
+    <!-- Past Report Table -->
+    <h4 class="mt-5">Past Reports</h4>
+    <div class="table-responsive">
+      <table class="table table-bordered" id="airReportTable">
+        <thead class="table-dark">
+          <tr>
+            <th>Timestamp</th>
+            <th>CO2 (PPM)</th>
+            <th>Ozone (PPB)</th>
+            <th>PM2.5 (μg/m³)</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- Status Section -->
+    <h4 class="mt-5">Air Quality Status</h4>
+    <div id="airStatus" class="p-3 bg-light border rounded">Loading...</div>
+  </div>
+</div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCn87T1nQGDszjP6SzqEgipiuS7O1J4h9E",
+    authDomain: "thesismonitoring.firebaseapp.com",
+    databaseURL: "https://thesismonitoring-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "thesismonitoring",
+    storageBucket: "thesismonitoring.appspot.com",
+    messagingSenderId: "259146059264",
+    appId: "1:259146059264:web:49cb7727dede0c751bd2e5"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  function createChart(ctxId, label, color) {
+    return new Chart(document.getElementById(ctxId), {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{ label: label, data: [], borderColor: color, fill: false }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  function filterLast7Days(data) {
+    const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    return data.filter(d => new Date(d.timestamp).getTime() > cutoff);
+  }
+
+  // Parsing function to clean sensor data values
+  function parseValue(value, unit) {
+    return parseFloat(value.replace(new RegExp(`[^0-9.${unit}]`, 'g'), '')) || 0;
+  }
+
+  const co2LiveChart = createChart("co2LiveChart", "CO2 (PPM) - Live", "green");
+  const ozoneLiveChart = createChart("ozoneLiveChart", "Ozone (PPB) - Live", "blue");
+  const pm25LiveChart = createChart("pm25LiveChart", "PM2.5 (μg/m³) - Live", "red");
+
+  const co2HistoryChart = createChart("co2HistoryChart", "CO2 (PPM) - 7 Days", "green");
+  const ozoneHistoryChart = createChart("ozoneHistoryChart", "Ozone (PPB) - 7 Days", "blue");
+  const pm25HistoryChart = createChart("pm25HistoryChart", "PM2.5 (μg/m³) - 7 Days", "red");
+
+  const airReportTable = document.querySelector("#airReportTable tbody");
+  const airStatusDiv = document.getElementById("airStatus");
+
+  db.ref("sensor_data").on("value", (snapshot) => {
+    const dataPoints = [];
+    snapshot.forEach((child) => {
+      const data = child.val();
+      if (data.timestamp && data.CO2 && data.Ozone && data.PM2_5) {
+        dataPoints.push({
+          timestamp: data.timestamp,
+          co2: parseValue(data.CO2, 'PPM'),
+          ozone: parseValue(data.Ozone, 'PPB'),
+          pm25: parseValue(data.PM2_5, 'ug/m3')
+        });
+      }
+    });
+
+    const last7Days = filterLast7Days(dataPoints);
+    const latest = dataPoints[dataPoints.length - 1];
+
+    // Update Live Charts
+    co2LiveChart.data.labels = [latest.timestamp];
+    co2LiveChart.data.datasets[0].data = [latest.co2];
+    co2LiveChart.update();
+
+    ozoneLiveChart.data.labels = [latest.timestamp];
+    ozoneLiveChart.data.datasets[0].data = [latest.ozone];
+    ozoneLiveChart.update();
+
+    pm25LiveChart.data.labels = [latest.timestamp];
+    pm25LiveChart.data.datasets[0].data = [latest.pm25];
+    pm25LiveChart.update();
+
+    // Update Historical Charts
+    co2HistoryChart.data.labels = last7Days.map(d => d.timestamp);
+    co2HistoryChart.data.datasets[0].data = last7Days.map(d => d.co2);
+    co2HistoryChart.update();
+
+    ozoneHistoryChart.data.labels = last7Days.map(d => d.timestamp);
+    ozoneHistoryChart.data.datasets[0].data = last7Days.map(d => d.ozone);
+    ozoneHistoryChart.update();
+
+    pm25HistoryChart.data.labels = last7Days.map(d => d.timestamp);
+    pm25HistoryChart.data.datasets[0].data = last7Days.map(d => d.pm25);
+    pm25HistoryChart.update();
+
+    // Update Report Table
+    airReportTable.innerHTML = "";
+    last7Days.forEach(d => {
+      airReportTable.innerHTML += `
+        <tr>
+          <td>${d.timestamp}</td>
+          <td>${d.co2}</td>
+          <td>${d.ozone}</td>
+          <td>${d.pm25}</td>
+        </tr>`;
+    });
+
+    // Air Quality Status
+    let statusText = "";
+    if (latest.co2 > 1000 || latest.ozone > 100 || latest.pm25 > 50) {
+      statusText = `<span class="text-danger fw-bold">Poor Air Quality</span>`;
+    } else if (latest.co2 > 800 || latest.ozone > 70 || latest.pm25 > 35) {
+      statusText = `<span class="text-warning fw-bold">Moderate Air Quality</span>`;
+    } else {
+      statusText = `<span class="text-success fw-bold">Good Air Quality</span>`;
+    }
+
+    airStatusDiv.innerHTML = `Latest CO2: ${latest.co2} ppm | Ozone: ${latest.ozone} ppb | PM2.5: ${latest.pm25} μg/m³<br>Status: ${statusText}`;
+  });
+</script>
+</body>
+</html>

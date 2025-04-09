@@ -134,7 +134,8 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCn87T1nQGDszjP6SzqEgipiuS7O1J4h9E",
@@ -150,6 +151,7 @@
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
     const submitButton = document.getElementById("submit");
     const signupButton = document.getElementById("sign-up");
@@ -208,12 +210,29 @@
       const password = passwordInput.value;
 
       signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
-          window.alert("Success! Welcome! Click OK to be redirected to the homepage.");
-          window.location.href = "homepage.html";
+        .then(async () => {
+          const user = auth.currentUser;
+          const userRef = doc(db, "users", user.uid);
+          const userDoc = await getDoc(userRef);
+
+          if (userDoc.exists()) {
+            const role = userDoc.data().role;
+            console.log("User role:", role);  // Log the role value
+            if (role === "admin") {
+              window.alert("Welcome Admin! Redirecting to the Admin page.");
+              window.location.href = "adminpage.html";  // Replace with the actual path to the admin page
+            } else {
+              window.alert("Welcome User! Redirecting to the homepage.");
+              window.location.href = "homepage.html";  // Replace with the actual path to the user homepage
+            }
+          } else {
+            console.error("User document not found");
+            window.alert("No user document found.");
+          }
         })
-        .catch(() => {
-          window.alert("Error occurred. Try again.");
+        .catch((error) => {
+          console.error("Login Error:", error.message);
+          window.alert("Login failed: " + error.message);
         });
     });
 

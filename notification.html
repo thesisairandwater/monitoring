@@ -48,6 +48,8 @@
 
             if (alerts.length > 0) {
                 addNotification(alerts);
+            } else {
+                addNotification(["✅ All sensors are within normal ranges."]);
             }
         }
 
@@ -71,7 +73,7 @@
         }
 
         // Listen for data changes in Firebase
-        const sensorRef = ref(db, "sensorData");
+        const sensorRef = ref(db, "sensor_data");
 
         onValue(sensorRef, (snapshot) => {
             if (snapshot.exists()) {
@@ -183,7 +185,6 @@
         <p>Monitoring real-time sensor values...</p>
     </div>
 
-    <!-- Notification List Panel -->
     <div id="notification-panel">
         <h2>⚠️ Notifications</h2>
         <ul id="notification-list"></ul>

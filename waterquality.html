@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Water Quality Monitoring</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Fredoka One', cursive;
+      background: #f2f2f2;
+      margin: 0;
+      padding: 0;
+    }
+    .side-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 220px;
+      background-color: #343a40;
+      padding-top: 20px;
+    }
+    .side-nav a {
+      display: block;
+      color: white;
+      padding: 12px 20px;
+      text-decoration: none;
+    }
+    .side-nav a:hover {
+      background-color: #495057;
+    }
+    .main-content {
+      margin-left: 220px;
+      padding: 30px;
+    }
+    .chart-container {
+      margin-bottom: 30px;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    table {
+      background-color: white;
+    }
+
+    /* Full blue header border */
+    h2 {
+      border-bottom: 4px solid blue; /* Blue border at the bottom */
+      padding-bottom: 10px; /* Adds spacing below the text */
+      color: #333; /* Dark text color for contrast */
+    }
+  </style>
+</head>
+<body>
+
+<!-- Side Navigation -->
+<div class="side-nav">
+  <h4 class="text-center text-white mb-4">Navigation</h4>
+  <a href="adminpage.html">Dashboard</a>
+  <a href="airquality.html">Air Quality</a>
+  <a href="waterquality.html">Water Quality</a>
+  <a href="pastreports.html">Past Reports</a>
+  <a href="index.html">Log Out</a>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+  <div class="container mb-5" id="waterQualitySection">
+    <h2 class="mb-4">Water Quality Monitoring</h2>
+
+    <!-- Live Monitoring -->
+    <div class="chart-container"><canvas id="tdsCLiveChart"></canvas></div>
+    <div class="chart-container"><canvas id="turbidityLiveChart"></canvas></div>
+    <div class="chart-container"><canvas id="phLiveChart"></canvas></div>
+
+    <!-- Historical Chart (Last 7 Days) -->
+    <h4 class="mt-5">7-Day Water Quality Trends</h4>
+    <div class="chart-container"><canvas id="tdsCHistoryChart"></canvas></div>
+    <div class="chart-container"><canvas id="turbidityHistoryChart"></canvas></div>
+    <div class="chart-container"><canvas id="phHistoryChart"></canvas></div>
+
+    <!-- Past Report Table -->
+    <h4 class="mt-5">Past Reports</h4>
+    <div class="table-responsive">
+      <table class="table table-bordered" id="waterReportTable">
+        <thead class="table-dark">
+          <tr>
+            <th>Timestamp</th>
+            <th>TDS-C (mg/L)</th>
+            <th>Turbidity (mg/L)</th>
+            <th>pH</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- Status Section -->
+    <h4 class="mt-5">Water Quality Status</h4>
+    <div id="waterStatus" class="p-3 bg-light border rounded">Loading...</div>
+  </div>
+</div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCn87T1nQGDszjP6SzqEgipiuS7O1J4h9E",
+    authDomain: "thesismonitoring.firebaseapp.com",
+    databaseURL: "https://thesismonitoring-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "thesismonitoring",
+    storageBucket: "thesismonitoring.appspot.com",
+    messagingSenderId: "259146059264",
+    appId: "1:259146059264:web:49cb7727dede0c751bd2e5"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  function createChart(ctxId, label, color) {
+    return new Chart(document.getElementById(ctxId), {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{ label: label, data: [], borderColor: color, fill: false }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  function filterLast7Days(data) {
+    const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    return data.filter(d => new Date(d.timestamp).getTime() > cutoff);
+  }
+
+  // Parsing function to clean sensor data values
+  function parseValue(value, unit) {
+    return parseFloat(value.replace(new RegExp(`[^0-9.${unit}]`, 'g'), '')) || 0;
+  }
+
+  const tdsCLiveChart = createChart("tdsCLiveChart", "TDS-C (mg/L) - Live", "green");
+  const turbidityLiveChart = createChart("turbidityLiveChart", "Turbidity (mg/L) - Live", "blue");
+  const phLiveChart = createChart("phLiveChart", "pH - Live", "red");
+
+  const tdsCHistoryChart = createChart("tdsCHistoryChart", "TDS-C (mg/L) - 7 Days", "green");
+  const turbidityHistoryChart = createChart("turbidityHistoryChart", "Turbidity (mg/L) - 7 Days", "blue");
+  const phHistoryChart = createChart("phHistoryChart", "pH - 7 Days", "red");
+
+  const waterReportTable = document.querySelector("#waterReportTable tbody");
+  const waterStatusDiv = document.getElementById("waterStatus");
+
+  db.ref("sensor_data").on("value", (snapshot) => {
+    const dataPoints = [];
+    snapshot.forEach((child) => {
+      const data = child.val();
+      console.log(data); // Log the fetched data to the console
+
+      if (data.timestamp && data["TDS-C"] && data.Turbidity && data.pH) {
+        dataPoints.push({
+          timestamp: data.timestamp,
+          tdsC: parseValue(data["TDS-C"], 'mg/L'),
+          turbidity: parseValue(data.Turbidity, 'mg/L'),
+          ph: parseValue(data.pH, 'pH')
+        });
+      }
+    });
+
+    console.log(dataPoints); // Log the processed data
+
+    const last7Days = filterLast7Days(dataPoints);
+    console.log(last7Days); // Log the filtered data for last 7 days
+
+    // Update Live Charts
+    const latest = dataPoints[dataPoints.length - 1];
+    tdsCLiveChart.data.labels = [latest.timestamp];
+    tdsCLiveChart.data.datasets[0].data = [latest.tdsC];
+    tdsCLiveChart.update();
+
+    turbidityLiveChart.data.labels = [latest.timestamp];
+    turbidityLiveChart.data.datasets[0].data = [latest.turbidity];
+    turbidityLiveChart.update();
+
+    phLiveChart.data.labels = [latest.timestamp];
+    phLiveChart.data.datasets[0].data = [latest.ph];
+    phLiveChart.update();
+
+    // Update Historical Charts
+    tdsCHistoryChart.data.labels = last7Days.map(d => d.timestamp);
+    tdsCHistoryChart.data.datasets[0].data = last7Days.map(d => d.tdsC);
+    tdsCHistoryChart.update();
+
+    turbidityHistoryChart.data.labels = last7Days.map(d => d.timestamp);
+    turbidityHistoryChart.data.datasets[0].data = last7Days.map(d => d.turbidity);
+    turbidityHistoryChart.update();
+
+    phHistoryChart.data.labels = last7Days.map(d => d.timestamp);
+    phHistoryChart.data.datasets[0].data = last7Days.map(d => d.ph);
+    phHistoryChart.update();
+
+    // Update Report Table
+    waterReportTable.innerHTML = "";
+    last7Days.forEach(d => {
+      waterReportTable.innerHTML += `
+        <tr>
+          <td>${d.timestamp}</td>
+          <td>${d.tdsC}</td>
+          <td>${d.turbidity}</td>
+          <td>${d.ph}</td>
+        </tr>`;
+    });
+
+    // Water Quality Status
+    let statusText = "";
+    if (latest.tdsC > 1000 || latest.turbidity > 100 || latest.ph < 6.5 || latest.ph > 8.5) {
+      statusText = `<span class="text-danger fw-bold">Poor Water Quality</span>`;
+    } else if (latest.tdsC > 500 || latest.turbidity > 50 || latest.ph < 7 || latest.ph > 8) {
+      statusText = `<span class="text-warning fw-bold">Moderate Water Quality</span>`;
+    } else {
+      statusText = `<span class="text-success fw-bold">Good Water Quality</span>`;
+    }
+
+    waterStatusDiv.innerHTML = `
+      Latest TDS-C: ${latest.tdsC} mg/L | 
+      Turbidity: ${latest.turbidity} mg/L | 
+      pH: ${latest.ph}<br>
+      Status: ${statusText}`;
+  });
+</script>
+</body>
+</html>

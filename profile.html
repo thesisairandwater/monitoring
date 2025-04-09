@@ -81,18 +81,20 @@
         // Check if the user is logged in
         auth.onAuthStateChanged(user => {
             if (user) {
+                // Display user information
                 document.getElementById("user-name").innerText = user.displayName || "Anonymous User";
                 document.getElementById("user-email").innerText = user.email || "No Email Provided";
                 document.getElementById("profile-pic").src = user.photoURL || "https://via.placeholder.com/100";
             } else {
-                window.location.href = "index.html"; // Redirect to login if not logged in
+                // Redirect to login page if not logged in
+                window.location.href = "index.html";
             }
         });
 
         // Logout function
         function logout() {
             auth.signOut().then(() => {
-                window.location.href = "index.html";
+                window.location.href = "index.html"; // Redirect to login page after logout
             }).catch(error => {
                 console.error("Logout Error:", error);
             });

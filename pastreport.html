@@ -57,11 +57,29 @@
             left: 10px;
             z-index: 1000;
         }
+        .download-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 15px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+        .date-selector {
+            text-align: center;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <a href="homepage.html" class="back-button">Back to Homepage</a>
-    <h2>Past Monitoring Data (Every 30 Minutes)</h2>
+    <h2>Past Monitoring Data</h2>
+    <div class="date-selector">
+        <label for="date-select">Select Date: </label>
+        <input type="date" id="date-select" name="date-select">
+    </div>
     <table>
         <thead>
             <tr>
@@ -75,9 +93,9 @@
             </tr>
         </thead>
         <tbody id="data-table">
-            <!-- Data will be inserted here -->
         </tbody>
     </table>
+    <a href="#" class="download-button" id="download-btn">Download Report</a>
 
     <script>
         const firebaseConfig = {
@@ -94,56 +112,91 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        function fetchData() {
+        function fetchData(date) {
+            const startOfDay = new Date(date);
+            startOfDay.setHours(0, 0, 0, 0);
+            const endOfDay = new Date(date);
+            endOfDay.setHours(23, 59, 59, 999);
+
             database.ref('sensor_data').orderByChild('timestamp').on('value', (snapshot) => {
-                console.log("Snapshot data:", snapshot.val()); // Log the raw data for debugging
+                console.log("Snapshot data:", snapshot.val()); 
 
                 if (snapshot.exists()) {
                     $('#data-table').empty();
-                    let lastTimestamp = null;
 
+                    let count = 0;
                     snapshot.forEach((childSnapshot) => {
                         const data = childSnapshot.val();
                         const currentTimestamp = new Date(data.timestamp);
-                        
-                        // Log individual data for debugging
-                        console.log("Data entry:", data);
 
-                        if (isNaN(currentTimestamp)) {
-                            console.error("Invalid timestamp:", data.timestamp); // Log error if timestamp is invalid
-                            return;
-                        }
+                        if (currentTimestamp >= startOfDay && currentTimestamp <= endOfDay) {
+                            if (count < 1000) {
+                                const formattedDate = currentTimestamp.getFullYear() + '-' +
+                                    String(currentTimestamp.getMonth() + 1).padStart(2, '0') + '-' + 
+                                    String(currentTimestamp.getDate()).padStart(2, '0');
 
-                        if (!lastTimestamp || Math.floor(currentTimestamp.getTime() / 1800000) !== Math.floor(lastTimestamp.getTime() / 1800000)) {
-                            const row = `<tr>
-                                <td>${currentTimestamp.toLocaleString()}</td>
-                                <td>${data.CO2 || "N/A"}</td>
-                                <td>${data.Ozone || "N/A"}</td>
-                                <td>${data.PM2_5 || "N/A"}</td>
-                                <td>${data.pH || "N/A"}</td>
-                                <td>${data.Turbidity || "N/A"}</td>
-                                <td>${data["TDS-C"] || "N/A"}</td>
-                            </tr>`;
-                            $('#data-table').prepend(row);
-                            lastTimestamp = currentTimestamp;
+                                const formattedTime = String(currentTimestamp.getHours()).padStart(2, '0') + ':' +
+                                    String(currentTimestamp.getMinutes()).padStart(2, '0') + ':' +
+                                    String(currentTimestamp.getSeconds()).padStart(2, '0');
+
+                                const formattedTimestamp = formattedDate + ' ' + formattedTime;
+
+                                const row = `<tr>
+                                    <td>${formattedTimestamp}</td>
+                                    <td>${data.CO2 || "N/A"}</td>
+                                    <td>${data.Ozone || "N/A"}</td>
+                                    <td>${data.PM2_5 || "N/A"}</td>
+                                    <td>${data.pH || "N/A"}</td>
+                                    <td>${data.Turbidity || "N/A"}</td>
+                                    <td>${data["TDS-C"] || "N/A"}</td>
+                                </tr>`;
+                                $('#data-table').prepend(row);
+                                count++;
+                            }
                         }
                     });
                 } else {
-                    $('#data-table').html("<tr><td colspan='7'>No data available</td></tr>");
+                    $('#data-table').html("<tr><td colspan='7'>No data available for the selected date</td></tr>");
                 }
             }, (error) => {
-                console.error("Error fetching data:", error); // Log any errors with fetching data
+                console.error("Error fetching data:", error);
             });
         }
 
-        $(document).ready(function() {
-            // Initial data fetch
-            fetchData();
+        function downloadReport() {
+            const tableData = [];
+            $('#data-table tr').each(function() {
+                const rowData = [];
+                $(this).find('td').each(function() {
+                    rowData.push($(this).text());
+                });
+                tableData.push(rowData.join(','));
+            });
 
-            // Set an interval to fetch data every 30 minutes (1800000 milliseconds)
-            setInterval(function() {
-                fetchData();
-            }, 1800000); // 30 minutes in milliseconds
+            const csvContent = "Timestamp,CO2,Ozone,PM2.5,pH,Turbidity,Conductivity\n" + tableData.join("\n");
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'past_monitoring_data.csv';
+            link.click();
+        }
+
+        $(document).ready(function() {
+            // Default: load the latest data (today)
+            const today = new Date().toISOString().split('T')[0];
+            fetchData(today);
+
+            // Change event for the date picker
+            $('#date-select').change(function() {
+                const selectedDate = $(this).val();
+                if (selectedDate) {
+                    fetchData(selectedDate);
+                }
+            });
+
+            $('#download-btn').click(function() {
+                downloadReport();
+            });
         });
     </script>
 </body>
