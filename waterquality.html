@@ -25,6 +25,7 @@
       width: 220px;
       background-color: #343a40;
       padding-top: 20px;
+      z-index: 1000;
     }
     .side-nav a {
       display: block;
@@ -35,34 +36,77 @@
     .side-nav a:hover {
       background-color: #495057;
     }
+    .side-nav h4 {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+    }
     .main-content {
       margin-left: 220px;
       padding: 30px;
     }
     .chart-container {
-      margin-bottom: 30px;
       background: white;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      border: 2px solid #ccc;
+      border-radius: 12px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.08);
+      width: 650px;
+      height: 380px;
+      margin: 20px auto;
     }
-    table {
-      background-color: white;
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
     }
-
-    /* Full blue header border */
+    .table-responsive {
+      margin-top: 20px;
+    }
+    .table th, .table td {
+      text-align: center;
+    }
+    .table th {
+      background-color: #343a40;
+      color: white;
+    }
+    .table td {
+      background-color: #f8f9fa;
+    }
+    .table-bordered {
+      border: 2px solid #343a40;
+    }
+    .table-bordered th, .table-bordered td {
+      border: 2px solid #343a40;
+    }
     h2 {
-      border-bottom: 4px solid blue; /* Blue border at the bottom */
-      padding-bottom: 10px; /* Adds spacing below the text */
-      color: #333; /* Dark text color for contrast */
+      border-bottom: 4px solid blue;
+      padding-bottom: 10px;
+      color: #333;
+    }
+    .trend-section {
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 30px;
+    }
+    .bg-green { background-color: #e6f9e6; }
+    .bg-blue { background-color: #e6f0ff; }
+    .bg-yellow { background-color: #fff9e6; }
+    @media (max-width: 768px) {
+      .side-nav {
+        position: relative;
+        height: auto;
+        width: 100%;
+      }
+      .main-content {
+        margin-left: 0;
+      }
     }
   </style>
 </head>
 <body>
 
-<!-- Side Navigation -->
 <div class="side-nav">
-  <h4 class="text-center text-white mb-4">Navigation</h4>
+  <h4>Navigation</h4>
   <a href="adminpage.html">Dashboard</a>
   <a href="airquality.html">Air Quality</a>
   <a href="waterquality.html">Water Quality</a>
@@ -70,41 +114,52 @@
   <a href="index.html">Log Out</a>
 </div>
 
-<!-- Main Content -->
 <div class="main-content">
   <div class="container mb-5" id="waterQualitySection">
-    <h2 class="mb-4">Water Quality Monitoring</h2>
+    <h2>Water Quality Monitoring</h2>
 
-    <!-- Live Monitoring -->
-    <div class="chart-container"><canvas id="tdsCLiveChart"></canvas></div>
-    <div class="chart-container"><canvas id="turbidityLiveChart"></canvas></div>
-    <div class="chart-container"><canvas id="phLiveChart"></canvas></div>
+    <section>
+      <h4>Water Quality Status</h4>
+      <div id="waterStatus" class="p-3 bg-light border rounded">Loading...</div>
+    </section>
 
-    <!-- Historical Chart (Last 7 Days) -->
-    <h4 class="mt-5">7-Day Water Quality Trends</h4>
-    <div class="chart-container"><canvas id="tdsCHistoryChart"></canvas></div>
-    <div class="chart-container"><canvas id="turbidityHistoryChart"></canvas></div>
-    <div class="chart-container"><canvas id="phHistoryChart"></canvas></div>
+    <section class="trend-section bg-green">
+      <h4>24-Hour Water Quality Trends</h4>
+      <div class="chart-container"><canvas id="tdsc24hChart"></canvas></div>
+      <div class="chart-container"><canvas id="turbidity24hChart"></canvas></div>
+      <div class="chart-container"><canvas id="ph24hChart"></canvas></div>
+    </section>
 
-    <!-- Past Report Table -->
-    <h4 class="mt-5">Past Reports</h4>
-    <div class="table-responsive">
-      <table class="table table-bordered" id="waterReportTable">
-        <thead class="table-dark">
-          <tr>
-            <th>Timestamp</th>
-            <th>TDS-C (mg/L)</th>
-            <th>Turbidity (mg/L)</th>
-            <th>pH</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
+    <section class="trend-section bg-blue">
+      <h4>7-Day Water Quality Trends</h4>
+      <div class="chart-container"><canvas id="tdsc7dChart"></canvas></div>
+      <div class="chart-container"><canvas id="turbidity7dChart"></canvas></div>
+      <div class="chart-container"><canvas id="ph7dChart"></canvas></div>
+    </section>
 
-    <!-- Status Section -->
-    <h4 class="mt-5">Water Quality Status</h4>
-    <div id="waterStatus" class="p-3 bg-light border rounded">Loading...</div>
+    <section class="trend-section bg-yellow">
+      <h4>30-Day Water Quality Trends</h4>
+      <div class="chart-container"><canvas id="tdsc30dChart"></canvas></div>
+      <div class="chart-container"><canvas id="turbidity30dChart"></canvas></div>
+      <div class="chart-container"><canvas id="ph30dChart"></canvas></div>
+    </section>
+
+    <section class="mt-4">
+      <h4>Past Reports</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered" id="waterReportTable">
+          <thead class="table-dark">
+            <tr>
+              <th>Timestamp</th>
+              <th>TDS-C (mg/L)</th>
+              <th>Turbidity (NTU)</th>
+              <th>pH</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
   </div>
 </div>
 
@@ -121,12 +176,20 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
+  const waterStatusDiv = document.getElementById("waterStatus");
+  const waterReportTable = document.querySelector("#waterReportTable tbody");
+
   function createChart(ctxId, label, color) {
     return new Chart(document.getElementById(ctxId), {
       type: 'line',
       data: {
         labels: [],
-        datasets: [{ label: label, data: [], borderColor: color, fill: false }]
+        datasets: [{
+          label: label,
+          data: [],
+          borderColor: color,
+          fill: false
+        }]
       },
       options: {
         responsive: true,
@@ -137,78 +200,62 @@
     });
   }
 
-  function filterLast7Days(data) {
-    const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  function filterByTimePeriod(data, days) {
+    const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
     return data.filter(d => new Date(d.timestamp).getTime() > cutoff);
   }
 
-  // Parsing function to clean sensor data values
-  function parseValue(value, unit) {
-    return parseFloat(value.replace(new RegExp(`[^0-9.${unit}]`, 'g'), '')) || 0;
-  }
+  const tdsc24hChart = createChart("tdsc24hChart", "TDS-C (mg/L) - 24h", "#2e8b57");
+  const turbidity24hChart = createChart("turbidity24hChart", "Turbidity (mg/L) - 24h", "#1e90ff");
+  const ph24hChart = createChart("ph24hChart", "pH - 24h", "#ff6347");
 
-  const tdsCLiveChart = createChart("tdsCLiveChart", "TDS-C (mg/L) - Live", "green");
-  const turbidityLiveChart = createChart("turbidityLiveChart", "Turbidity (mg/L) - Live", "blue");
-  const phLiveChart = createChart("phLiveChart", "pH - Live", "red");
+  const tdsc7dChart = createChart("tdsc7dChart", "TDS-C (mg/L) - 7d", "#2e8b57");
+  const turbidity7dChart = createChart("turbidity7dChart", "Turbidity (mg/L) - 7d", "#1e90ff");
+  const ph7dChart = createChart("ph7dChart", "pH - 7d", "#ff6347");
 
-  const tdsCHistoryChart = createChart("tdsCHistoryChart", "TDS-C (mg/L) - 7 Days", "green");
-  const turbidityHistoryChart = createChart("turbidityHistoryChart", "Turbidity (mg/L) - 7 Days", "blue");
-  const phHistoryChart = createChart("phHistoryChart", "pH - 7 Days", "red");
-
-  const waterReportTable = document.querySelector("#waterReportTable tbody");
-  const waterStatusDiv = document.getElementById("waterStatus");
+  const tdsc30dChart = createChart("tdsc30dChart", "TDS-C (mg/L) - 30d", "#2e8b57");
+  const turbidity30dChart = createChart("turbidity30dChart", "Turbidity (mg/L) - 30d", "#1e90ff");
+  const ph30dChart = createChart("ph30dChart", "pH - 30d", "#ff6347");
 
   db.ref("sensor_data").on("value", (snapshot) => {
     const dataPoints = [];
-    snapshot.forEach((child) => {
+    snapshot.forEach(child => {
       const data = child.val();
-      console.log(data); // Log the fetched data to the console
-
       if (data.timestamp && data["TDS-C"] && data.Turbidity && data.pH) {
         dataPoints.push({
           timestamp: data.timestamp,
-          tdsC: parseValue(data["TDS-C"], 'mg/L'),
-          turbidity: parseValue(data.Turbidity, 'mg/L'),
-          ph: parseValue(data.pH, 'pH')
+          tdsC: parseFloat(data["TDS-C"].replace(/[^0-9.]/g, '')),
+          turbidity: parseFloat(data.Turbidity.replace(/[^0-9.]/g, '')),
+          ph: parseFloat(data.pH.replace(/[^0-9.]/g, ''))
         });
       }
     });
 
-    console.log(dataPoints); // Log the processed data
+    const last24h = filterByTimePeriod(dataPoints, 1);
+    const last7d = filterByTimePeriod(dataPoints, 7);
+    const last30d = filterByTimePeriod(dataPoints, 30);
 
-    const last7Days = filterLast7Days(dataPoints);
-    console.log(last7Days); // Log the filtered data for last 7 days
+    function updateChart(chart, data, key) {
+      chart.data.labels = data.map(d => d.timestamp);
+      chart.data.datasets[0].data = data.map(d => d[key]);
+      chart.update();
+    }
 
-    // Update Live Charts
-    const latest = dataPoints[dataPoints.length - 1];
-    tdsCLiveChart.data.labels = [latest.timestamp];
-    tdsCLiveChart.data.datasets[0].data = [latest.tdsC];
-    tdsCLiveChart.update();
+    updateChart(tdsc24hChart, last24h, "tdsC");
+    updateChart(turbidity24hChart, last24h, "turbidity");
+    updateChart(ph24hChart, last24h, "ph");
 
-    turbidityLiveChart.data.labels = [latest.timestamp];
-    turbidityLiveChart.data.datasets[0].data = [latest.turbidity];
-    turbidityLiveChart.update();
+    updateChart(tdsc7dChart, last7d, "tdsC");
+    updateChart(turbidity7dChart, last7d, "turbidity");
+    updateChart(ph7dChart, last7d, "ph");
 
-    phLiveChart.data.labels = [latest.timestamp];
-    phLiveChart.data.datasets[0].data = [latest.ph];
-    phLiveChart.update();
+    updateChart(tdsc30dChart, last30d, "tdsC");
+    updateChart(turbidity30dChart, last30d, "turbidity");
+    updateChart(ph30dChart, last30d, "ph");
 
-    // Update Historical Charts
-    tdsCHistoryChart.data.labels = last7Days.map(d => d.timestamp);
-    tdsCHistoryChart.data.datasets[0].data = last7Days.map(d => d.tdsC);
-    tdsCHistoryChart.update();
-
-    turbidityHistoryChart.data.labels = last7Days.map(d => d.timestamp);
-    turbidityHistoryChart.data.datasets[0].data = last7Days.map(d => d.turbidity);
-    turbidityHistoryChart.update();
-
-    phHistoryChart.data.labels = last7Days.map(d => d.timestamp);
-    phHistoryChart.data.datasets[0].data = last7Days.map(d => d.ph);
-    phHistoryChart.update();
-
-    // Update Report Table
+    // Update Report Table (7d)
     waterReportTable.innerHTML = "";
-    last7Days.forEach(d => {
+    last7d.forEach(d => {
       waterReportTable.innerHTML += `
         <tr>
           <td>${d.timestamp}</td>
@@ -218,18 +265,19 @@
         </tr>`;
     });
 
-    // Water Quality Status
+    // Latest Reading & Status
+    const latest = dataPoints[dataPoints.length - 1];
     let statusText = "";
-    if (latest.tdsC > 1000 || latest.turbidity > 100 || latest.ph < 6.5 || latest.ph > 8.5) {
+    if (latest.tdsC > 500 || latest.turbidity > 5 || latest.ph < 6.5 || latest.ph > 8.5) {
       statusText = `<span class="text-danger fw-bold">Poor Water Quality</span>`;
-    } else if (latest.tdsC > 500 || latest.turbidity > 50 || latest.ph < 7 || latest.ph > 8) {
+    } else if (latest.tdsC > 300 || latest.turbidity > 2 || (latest.ph >= 6.5 && latest.ph <= 6.8) || (latest.ph >= 8.2 && latest.ph <= 8.5)) {
       statusText = `<span class="text-warning fw-bold">Moderate Water Quality</span>`;
     } else {
       statusText = `<span class="text-success fw-bold">Good Water Quality</span>`;
     }
 
-    waterStatusDiv.innerHTML = `
-      Latest TDS-C: ${latest.tdsC} mg/L | 
+    waterStatusDiv.innerHTML =
+      `Latest TDS-C: ${latest.tdsC} mg/L | 
       Turbidity: ${latest.turbidity} mg/L | 
       pH: ${latest.ph}<br>
       Status: ${statusText}`;

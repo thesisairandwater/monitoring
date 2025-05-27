@@ -17,7 +17,6 @@
       margin: 0;
       padding: 0;
     }
-    /* Fixed Sidebar Styles */
     .side-nav {
       position: fixed;
       top: 0;
@@ -26,7 +25,7 @@
       width: 220px;
       background-color: #343a40;
       padding-top: 20px;
-      z-index: 1000; /* Ensure the sidebar is on top */
+      z-index: 1000;
     }
     .side-nav a {
       display: block;
@@ -37,40 +36,100 @@
     .side-nav a:hover {
       background-color: #495057;
     }
-    /* Sidebar header */
     .side-nav h4 {
       text-align: center;
       color: white;
       margin-bottom: 30px;
     }
-    /* Main content styles */
     .main-content {
-      margin-left: 220px;  /* Space for the sidebar */
+      margin-left: 220px;
       padding: 30px;
     }
     .chart-container {
-      margin-bottom: 30px;
       background: white;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      border: 2px solid #ccc;
+      border-radius: 12px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.08);
+      width: 650px;
+      height: 380px;
+      margin: 20px auto;
     }
-    table {
-      background-color: white;
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
     }
-
-    /* Styling for table headers and content */
+    .table-responsive {
+      margin-top: 20px;
+    }
+    .table th, .table td {
+      text-align: center;
+    }
+    .table th {
+      background-color: #343a40;
+      color: white;
+    }
+    .table td {
+      background-color: #f8f9fa;
+    }
+    .table-striped tbody tr:nth-of-type(odd) {
+      background-color: #f2f2f2;
+    }
+    .table-striped tbody tr:nth-of-type(even) {
+      background-color: #ffffff;
+    }
+    .table-bordered {
+      border: 2px solid #343a40;
+    }
+    .table-bordered th, .table-bordered td {
+      border: 2px solid #343a40;
+    }
+    .table-bordered th {
+      background-color: #343a40;
+      color: white;
+    }
+    .table-bordered td {
+      background-color: #f8f9fa;
+    }
+    .table-bordered tbody tr:nth-of-type(odd) {
+      background-color: #f2f2f2;
+    }
+    .table-bordered tbody tr:nth-of-type(even) {
+      background-color: #ffffff;
+    }
+    .table-bordered tbody tr:hover {
+      background-color: #e2e6ea;
+    }
+    .table-bordered thead th {
+      background-color: #343a40;
+      color: white;
+    }
+    .table-bordered tbody tr:hover td {
+      background-color: #e2e6ea;
+    }
+    .table-bordered tbody tr:hover th {
+      background-color: #e2e6ea;
+    }
+    .table-bordered tbody tr:hover {
+      background-color: #e2e6ea;
+    }
+    h2 {
+      border-bottom: 4px solid blue;
+      padding-bottom: 10px;
+      color: #333;
+    }
     .table-dark th {
       background-color: #343a40;
       color: white;
     }
-    h2 {
-      border-bottom: 4px solid blue; /* Blue border at the bottom */
-      padding-bottom: 10px; /* Adds spacing below the text */
-      color: #333; /* Dark text color for contrast */
+    .trend-section {
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 30px;
     }
-
-    /* Make sidebar responsive for smaller screens */
+    .bg-green { background-color: #e6f9e6; }
+    .bg-blue { background-color: #e6f0ff; }
+    .bg-yellow { background-color: #fff9e6; }
     @media (max-width: 768px) {
       .side-nav {
         position: relative;
@@ -85,7 +144,7 @@
 </head>
 <body>
 
-<!-- Side Navigation -->
+<!-- Sidebar -->
 <div class="side-nav">
   <h4>Navigation</h4>
   <a href="adminpage.html">Dashboard</a>
@@ -98,38 +157,55 @@
 <!-- Main Content -->
 <div class="main-content">
   <div class="container mb-5" id="airQualitySection">
-    <h2 class="mb-4">Air Quality Monitoring</h2>
+    <h2>Air Quality Monitoring</h2>
 
-    <!-- Live Monitoring -->
-    <div class="chart-container"><canvas id="co2LiveChart"></canvas></div>
-    <div class="chart-container"><canvas id="ozoneLiveChart"></canvas></div>
-    <div class="chart-container"><canvas id="pm25LiveChart"></canvas></div>
+    <!-- Air Quality Status -->
+    <section>
+      <h4>Air Quality Status</h4>
+      <div id="airStatus" class="p-3 bg-light border rounded">Loading...</div>
+    </section>
 
-    <!-- Historical Chart (Last 7 Days) -->
-    <h4 class="mt-5">7-Day Air Quality Trends</h4>
-    <div class="chart-container"><canvas id="co2HistoryChart"></canvas></div>
-    <div class="chart-container"><canvas id="ozoneHistoryChart"></canvas></div>
-    <div class="chart-container"><canvas id="pm25HistoryChart"></canvas></div>
+    <!-- 24-Hour Trend -->
+    <section class="trend-section bg-green">
+      <h4>24-Hour Air Quality Trends</h4>
+      <div class="chart-container"><canvas id="co224hChart" class="mx-auto d-block"></canvas></div>
+      <div class="chart-container"><canvas id="ozone24hChart" class="mx-auto d-block"></canvas></div>
+      <div class="chart-container"><canvas id="pm2524hChart" class="mx-auto d-block"></canvas></div>
+    </section>
 
-    <!-- Past Report Table -->
-    <h4 class="mt-5">Past Reports</h4>
-    <div class="table-responsive">
-      <table class="table table-bordered" id="airReportTable">
-        <thead class="table-dark">
-          <tr>
-            <th>Timestamp</th>
-            <th>CO2 (PPM)</th>
-            <th>Ozone (PPB)</th>
-            <th>PM2.5 (μg/m³)</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
+    <!-- 7-Day Trend -->
+    <section class="trend-section bg-blue">
+      <h4>7-Day Air Quality Trends</h4>
+      <div class="chart-container"><canvas id="co27dChart" class="mx-auto d-block"></canvas></div>
+      <div class="chart-container"><canvas id="ozone7dChart" class="mx-auto d-block"></canvas></div>
+      <div class="chart-container"><canvas id="pm257dChart" class="mx-auto d-block"></canvas></div>
+    </section>
 
-    <!-- Status Section -->
-    <h4 class="mt-5">Air Quality Status</h4>
-    <div id="airStatus" class="p-3 bg-light border rounded">Loading...</div>
+    <!-- 30-Day Trend -->
+    <section class="trend-section bg-yellow">
+      <h4>30-Day Air Quality Trends</h4>
+      <div class="chart-container"><canvas id="co230dChart" class="mx-auto d-block"></canvas></div>
+      <div class="chart-container"><canvas id="ozone30dChart" class="mx-auto d-block"></canvas></div>
+      <div class="chart-container"><canvas id="pm2530dChart" class="mx-auto d-block"></canvas></div>
+    </section>
+
+    <!-- Past Reports Table -->
+    <section class="mt-4">
+      <h4>Past Reports</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered" id="airReportTable">
+          <thead class="table-dark">
+            <tr>
+              <th>Timestamp</th>
+              <th>CO2 (PPM)</th>
+              <th>Ozone (PPB)</th>
+              <th>PM2.5 (μg/m³)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
   </div>
 </div>
 
@@ -162,23 +238,22 @@
     });
   }
 
-  function filterLast7Days(data) {
-    const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  function filterByTimePeriod(data, days) {
+    const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
     return data.filter(d => new Date(d.timestamp).getTime() > cutoff);
   }
 
-  // Parsing function to clean sensor data values
-  function parseValue(value, unit) {
-    return parseFloat(value.replace(new RegExp(`[^0-9.${unit}]`, 'g'), '')) || 0;
-  }
+  const co224hChart = createChart("co224hChart", "CO2 (PPM) - 24 Hours", "green");
+  const ozone24hChart = createChart("ozone24hChart", "Ozone (PPB) - 24 Hours", "blue");
+  const pm2524hChart = createChart("pm2524hChart", "PM2.5 (μg/m³) - 24 Hours", "red");
 
-  const co2LiveChart = createChart("co2LiveChart", "CO2 (PPM) - Live", "green");
-  const ozoneLiveChart = createChart("ozoneLiveChart", "Ozone (PPB) - Live", "blue");
-  const pm25LiveChart = createChart("pm25LiveChart", "PM2.5 (μg/m³) - Live", "red");
+  const co27dChart = createChart("co27dChart", "CO2 (PPM) - 7 Days", "green");
+  const ozone7dChart = createChart("ozone7dChart", "Ozone (PPB) - 7 Days", "blue");
+  const pm257dChart = createChart("pm257dChart", "PM2.5 (μg/m³) - 7 Days", "red");
 
-  const co2HistoryChart = createChart("co2HistoryChart", "CO2 (PPM) - 7 Days", "green");
-  const ozoneHistoryChart = createChart("ozoneHistoryChart", "Ozone (PPB) - 7 Days", "blue");
-  const pm25HistoryChart = createChart("pm25HistoryChart", "PM2.5 (μg/m³) - 7 Days", "red");
+  const co230dChart = createChart("co230dChart", "CO2 (PPM) - 30 Days", "green");
+  const ozone30dChart = createChart("ozone30dChart", "Ozone (PPB) - 30 Days", "blue");
+  const pm2530dChart = createChart("pm2530dChart", "PM2.5 (μg/m³) - 30 Days", "red");
 
   const airReportTable = document.querySelector("#airReportTable tbody");
   const airStatusDiv = document.getElementById("airStatus");
@@ -190,43 +265,35 @@
       if (data.timestamp && data.CO2 && data.Ozone && data.PM2_5) {
         dataPoints.push({
           timestamp: data.timestamp,
-          co2: parseValue(data.CO2, 'PPM'),
-          ozone: parseValue(data.Ozone, 'PPB'),
-          pm25: parseValue(data.PM2_5, 'ug/m3')
+          co2: typeof data.CO2 === "string" ? parseFloat(data.CO2.replace(/[^0-9.]/g, '')) : parseFloat(data.CO2),
+          ozone: typeof data.Ozone === "string" ? parseFloat(data.Ozone.replace(/[^0-9.]/g, '')) : parseFloat(data.Ozone),
+          pm25: typeof data.PM2_5 === "string" ? parseFloat(data.PM2_5.replace(/[^0-9.]/g, '')) / 10 : parseFloat(data.PM2_5) / 10
         });
       }
     });
 
-    const last7Days = filterLast7Days(dataPoints);
-    const latest = dataPoints[dataPoints.length - 1];
+    const last24Hours = filterByTimePeriod(dataPoints, 1);
+    const last7Days = filterByTimePeriod(dataPoints, 7);
+    const last30Days = filterByTimePeriod(dataPoints, 30);
 
-    // Update Live Charts
-    co2LiveChart.data.labels = [latest.timestamp];
-    co2LiveChart.data.datasets[0].data = [latest.co2];
-    co2LiveChart.update();
+    function updateChart(chart, data, key) {
+      chart.data.labels = data.map(d => d.timestamp);
+      chart.data.datasets[0].data = data.map(d => d[key]);
+      chart.update();
+    }
 
-    ozoneLiveChart.data.labels = [latest.timestamp];
-    ozoneLiveChart.data.datasets[0].data = [latest.ozone];
-    ozoneLiveChart.update();
+    updateChart(co224hChart, last24Hours, "co2");
+    updateChart(ozone24hChart, last24Hours, "ozone");
+    updateChart(pm2524hChart, last24Hours, "pm25");
 
-    pm25LiveChart.data.labels = [latest.timestamp];
-    pm25LiveChart.data.datasets[0].data = [latest.pm25];
-    pm25LiveChart.update();
+    updateChart(co27dChart, last7Days, "co2");
+    updateChart(ozone7dChart, last7Days, "ozone");
+    updateChart(pm257dChart, last7Days, "pm25");
 
-    // Update Historical Charts
-    co2HistoryChart.data.labels = last7Days.map(d => d.timestamp);
-    co2HistoryChart.data.datasets[0].data = last7Days.map(d => d.co2);
-    co2HistoryChart.update();
+    updateChart(co230dChart, last30Days, "co2");
+    updateChart(ozone30dChart, last30Days, "ozone");
+    updateChart(pm2530dChart, last30Days, "pm25");
 
-    ozoneHistoryChart.data.labels = last7Days.map(d => d.timestamp);
-    ozoneHistoryChart.data.datasets[0].data = last7Days.map(d => d.ozone);
-    ozoneHistoryChart.update();
-
-    pm25HistoryChart.data.labels = last7Days.map(d => d.timestamp);
-    pm25HistoryChart.data.datasets[0].data = last7Days.map(d => d.pm25);
-    pm25HistoryChart.update();
-
-    // Update Report Table
     airReportTable.innerHTML = "";
     last7Days.forEach(d => {
       airReportTable.innerHTML += `
@@ -238,7 +305,7 @@
         </tr>`;
     });
 
-    // Air Quality Status
+    const latest = dataPoints[dataPoints.length - 1];
     let statusText = "";
     if (latest.co2 > 1000 || latest.ozone > 100 || latest.pm25 > 50) {
       statusText = `<span class="text-danger fw-bold">Poor Air Quality</span>`;
