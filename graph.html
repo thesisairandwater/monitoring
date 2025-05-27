@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -125,17 +125,29 @@
 
     const charts = {
       "Ozone": createChart("ozoneChart", "Ozone", "blue", 1, 150),
-      "CO2": createChart("co2Chart", "CO2", "green", 1, 1000),
-      "PM2_5": createChart("pmChart", "PM2.5", "red", 1, 150),
+      "CO2": createChart("co2Chart", "CO2", "green", 50, 1000),
+      "PM2_5": createChart("pmChart", "PM2.5", "red", 5, 150),
       "pH": createChart("phChart", "pH Level", "purple", 1, 14),
       "TDS-C": createChart("tdsChart", "TDS", "brown", 100, 1000),
-      "Turbidity": createChart("turbidityChart", "Turbidity", "orange", 1, 100)
+      "Turbidity": createChart("turbidityChart", "Turbidity", "orange", 5, 100)
     };
+
+    function getUnit(sensorKey) {
+      const units = {
+        "Ozone": " PPB",
+        "CO2": " PPM",
+        "PM2_5": " µg/m³",
+        "pH": "",
+        "TDS-C": " mg/L",
+        "Turbidity": " mg/L"
+      };
+      return units[sensorKey] || "";
+    }
 
     function updateSensorUI(sensor, value) {
       const sensorElement = document.getElementById(`${sensor}-sensor`);
       if (sensorElement) {
-        sensorElement.innerHTML = `${sensor}: ${value}`;
+        sensorElement.innerHTML = `${sensor.replace("_", ".")}: ${value}`;
       }
     }
 
@@ -151,24 +163,28 @@
     }
 
     function listenToSensor(sensorKey) {
-      const ref = db.ref("sensor_data");
-      ref.limitToLast(1).on("child_added", (snapshot) => {
-        const data = snapshot.val();
-        if (!data || !data[sensorKey]) return;
+  const ref = db.ref("sensor_data");
+  ref.limitToLast(1).on("child_added", (snapshot) => {
+    const data = snapshot.val();
+    if (!data || !data[sensorKey]) return;
 
-        let rawValue = data[sensorKey];
-        let numericValue = rawValue;
+    let rawValue = data[sensorKey];
+    let numericValue = rawValue;
 
-        if (typeof rawValue === "string") {
-          numericValue = parseFloat(rawValue.replace(/[^\d.-]/g, ""));
-        }
-
-        if (!isNaN(numericValue)) {
-          updateSensorUI(sensorKey, rawValue);
-          updateChart(charts[sensorKey], numericValue);
-        }
-      });
+    if (typeof rawValue === "string") {
+      rawValue = rawValue.replace(",", ".").replace(/\s/g, "");
+      numericValue = parseFloat(rawValue);
     }
+
+    console.log(`${sensorKey} raw:`, rawValue, "| parsed:", numericValue);
+
+    if (!isNaN(numericValue)) {
+      const displayValue = numericValue + getUnit(sensorKey);
+      updateSensorUI(sensorKey, displayValue);
+      updateChart(charts[sensorKey], numericValue);
+    }
+  });
+}
 
     listenToSensor("Ozone");
     listenToSensor("CO2");
