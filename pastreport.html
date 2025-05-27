@@ -76,10 +76,14 @@
 <body>
     <a href="homepage.html" class="back-button">Back to Homepage</a>
     <h2>Past Monitoring Data</h2>
+    
+    <a href="#" class="download-button" id="download-btn">Download Report</a>
+    
     <div class="date-selector">
         <label for="date-select">Select Date: </label>
         <input type="date" id="date-select" name="date-select">
     </div>
+
     <table>
         <thead>
             <tr>
@@ -95,7 +99,6 @@
         <tbody id="data-table">
         </tbody>
     </table>
-    <a href="#" class="download-button" id="download-btn">Download Report</a>
 
     <script>
         const firebaseConfig = {
